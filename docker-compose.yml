@@ -4,6 +4,8 @@ services:
     image: postgres:alpine
     restart: unless-stopped
     container_name: postgres-dev-db
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_PASSWORD: dev
       POSTGRES_USER: dev
