@@ -1,13 +1,11 @@
 {
   "defaultSeverity": "error",
-  "extends": [
-    "tslint-config-prettier",
-    "tslint-plugin-prettier",
-    "tslint:recommended"
-  ],
+  "extends": ["tslint-config-prettier", "tslint-plugin-prettier"],
   "jsRules": {},
   "rules": {
-    "prettier": true
+    "prettier": true,
+    "class-name": true,
+    "file-name-casing": [true, "kebab-case"]
   },
   "rulesDirectory": []
 }

@@ -13,6 +13,8 @@
   "author": "Eike Lurz",
   "license": "ISC",
   "devDependencies": {
+    "@types/jsonwebtoken": "^8.3.2",
+    "@types/moment": "^2.13.0",
     "jest": "^24.8.0",
     "prettier": "^1.18.2",
     "ts-node-dev": "^1.0.0-pre.40",
@@ -22,7 +24,13 @@
     "typescript": "^3.5.3"
   },
   "dependencies": {
+    "envalid": "^5.0.0",
     "graphql-yoga": "^1.18.1",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.24.0",
+    "pg": "^7.12.0",
+    "reflect-metadata": "^0.1.13",
+    "type-graphql": "^0.17.4",
     "typeorm": "^0.2.18"
   }
 }

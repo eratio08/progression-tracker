@@ -14,6 +14,8 @@ hide empty members
 entity User {
   pk(user_id) : varchar
   --
+  * name : varchar
+  * password_hash : varchar
 }
 
 entity Plan {
@@ -35,7 +37,7 @@ entity Exercise {
   pk(exercise_id) : varchar
   --
   * name : varchar(80)
-  * type : ["push", "pull", "mixed"]
+  * type : ["push", "pull", "cardio"]
 }
 
 entity Training {
@@ -43,6 +45,7 @@ entity Training {
   --
   * fk(plan_id) : varchar
   * date  : date
+  * nr : integer
 }
 
 entity Exercise_Execution {
@@ -50,7 +53,9 @@ entity Exercise_Execution {
   --
   * fk(exercise_id) : varchar
   * fk(traning_id) : varchar
-  * volume : decimal
+  * target_volume : decimal
+  * target_weight : decimal
+  * target_reps : integer
   comment : varchar(255)
   one_r_m : decimal
 }
@@ -59,7 +64,8 @@ entity Set {
   pk(set_id) : varchar
   --
   *fk(exercise_execution_id) : varchar
-  * wight : decimal
+  * nr : integer
+  * weight : decimal
   * reps : integer
 }
 
