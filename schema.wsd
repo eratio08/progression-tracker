@@ -1,0 +1,76 @@
+@startuml progession-tracker
+
+skinparam monochrome true
+skinparam shadowing false
+skinparam linetype ortho
+
+!define pk(x) * <b>PK |</b> x
+!define fk(x) <b>FK |</b> x
+hide circle
+hide empty members
+
+' Entities
+
+entity User {
+  pk(user_id) : varchar
+  --
+}
+
+entity Plan {
+  pk(plan_id) : varchar
+  --
+  * fk(user_id) : varchar
+  * name : varchar(80)
+  description : varchar(255)
+}
+
+entity Exercise_Assignment {
+  pk(exercise_assignment_id)
+  --
+  * fk(plan_id) : varchar
+  * fk(exercise_id) : varchar
+}
+
+entity Exercise {
+  pk(exercise_id) : varchar
+  --
+  * name : varchar(80)
+  * type : ["push", "pull", "mixed"]
+}
+
+entity Training {
+  pk(traning_id) : varchar
+  --
+  * fk(plan_id) : varchar
+  * date  : date
+}
+
+entity Exercise_Execution {
+  pk(exercise_execution_id) : varchar
+  --
+  * fk(exercise_id) : varchar
+  * fk(traning_id) : varchar
+  * volume : decimal
+  comment : varchar(255)
+  one_r_m : decimal
+}
+
+entity Set {
+  pk(set_id) : varchar
+  --
+  *fk(exercise_execution_id) : varchar
+  * wight : decimal
+  * reps : integer
+}
+
+' Relations
+User ||--o{ Plan
+Plan ||--o{ Exercise_Assignment
+Plan ||--o{ Training
+Exercise_Assignment }o--|| Exercise
+Training ||--|{ Exercise_Execution
+Exercise_Execution ||--|{ Set
+Exercise_Execution }o--|| Exercise
+
+
+@enduml
