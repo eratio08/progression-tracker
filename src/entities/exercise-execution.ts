@@ -1,19 +1,40 @@
-import { Entity, ManyToOne, PrimaryColumn } from "typeorm";
-import { Training } from "./training";
+import { Field, ID, ObjectType } from "type-graphql";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 import { Exercise } from "./exercise";
+import { Set } from "./set";
+import { Training } from "./training";
 
+@ObjectType()
 @Entity()
 export class ExerciseExecution {
+  @Field(_ => ID)
   @PrimaryColumn()
   public id: string;
+  @Field()
+  @Column()
+  public volumen: number;
+  @Field({ nullable: true })
+  @Column()
+  public description?: number;
+  @Field()
+  @Column()
+  public oneRepMax?: number;
 
   @ManyToOne(_ => Training, training => training.exerciseExecutions)
   public traning: Training;
   @ManyToOne(_ => Exercise)
   public exercise: Exercise;
+  @OneToMany(_ => Set, set => set.exerciseExecution)
+  public sets!: Set[];
 
-  constructor(id: string, training: Training, exercise: Exercise) {
+  constructor(
+    id: string,
+    volumen: number,
+    training: Training,
+    exercise: Exercise
+  ) {
     this.id = id;
+    this.volumen = volumen;
     this.traning = training;
     this.exercise = exercise;
   }

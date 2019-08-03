@@ -16,6 +16,7 @@ entity User {
   --
   * name : varchar
   * password_hash : varchar
+  * email : varchar
 }
 
 entity Plan {
@@ -53,11 +54,9 @@ entity Exercise_Execution {
   --
   * fk(exercise_id) : varchar
   * fk(traning_id) : varchar
-  * target_volume : decimal
-  * target_weight : decimal
-  * target_reps : integer
+  * volume : decimal
   comment : varchar(255)
-  one_r_m : decimal
+  one_rep_max : decimal
 }
 
 entity Set {
@@ -67,6 +66,9 @@ entity Set {
   * nr : integer
   * weight : decimal
   * reps : integer
+  * target_volume : decimal
+  * target_weight : decimal
+  * target_reps : integer
 }
 
 ' Relations

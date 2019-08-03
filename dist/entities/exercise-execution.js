@@ -11,47 +11,31 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
-const plan_1 = require("./plan");
-let User = class User {
-    constructor(id, email, name, passwordHash) {
+const exercise_1 = require("./exercise");
+const training_1 = require("./training");
+let ExerciseExecution = class ExerciseExecution {
+    constructor(id, training, exercise) {
         this.id = id;
-        this.email = email;
-        this.name = name;
-        this.passwordHash = passwordHash;
-    }
-    toJSON() {
-        const { id, name, email, plans } = this;
-        return { id, name, email, plans };
+        this.traning = training;
+        this.exercise = exercise;
     }
 };
 __decorate([
     type_graphql_1.Field(_ => type_graphql_1.ID),
     typeorm_1.PrimaryColumn(),
     __metadata("design:type", String)
-], User.prototype, "id", void 0);
+], ExerciseExecution.prototype, "id", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    typeorm_1.Column({
-        length: 80
-    }),
-    __metadata("design:type", String)
-], User.prototype, "name", void 0);
+    typeorm_1.ManyToOne(_ => training_1.Training, training => training.exerciseExecutions),
+    __metadata("design:type", training_1.Training)
+], ExerciseExecution.prototype, "traning", void 0);
 __decorate([
-    typeorm_1.Column(),
-    __metadata("design:type", String)
-], User.prototype, "email", void 0);
-__decorate([
-    typeorm_1.Column(),
-    __metadata("design:type", String)
-], User.prototype, "passwordHash", void 0);
-__decorate([
-    type_graphql_1.Field(_ => plan_1.Plan),
-    typeorm_1.OneToMany(_ => plan_1.Plan, plan => plan.user),
-    __metadata("design:type", Array)
-], User.prototype, "plans", void 0);
-User = __decorate([
+    typeorm_1.ManyToOne(_ => exercise_1.Exercise),
+    __metadata("design:type", exercise_1.Exercise)
+], ExerciseExecution.prototype, "exercise", void 0);
+ExerciseExecution = __decorate([
     type_graphql_1.ObjectType(),
     typeorm_1.Entity(),
-    __metadata("design:paramtypes", [String, String, String, String])
-], User);
-exports.User = User;
+    __metadata("design:paramtypes", [String, training_1.Training, exercise_1.Exercise])
+], ExerciseExecution);
+exports.ExerciseExecution = ExerciseExecution;

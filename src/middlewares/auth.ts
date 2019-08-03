@@ -1,37 +1,44 @@
 import { NextFunction, Request, Response } from "express";
-
-import { TokenType, verifyJwt } from "../services";
-
-import { asyncWrap } from "./async";
 import { getRepository } from "typeorm";
+import { config } from "../config";
 import { User } from "../entities";
+import { BaseToken, token, TokenType } from "../services";
+import { asyncWrap } from "./async";
 
 export const authenticate = () =>
   asyncWrap(async (req: Request, _: Response, next: NextFunction) => {
-    const authHeader: string | undefined = req.headers.authorization;
-    if (!authHeader) {
+    const cookies = parseCookies(req);
+    const accessCookie = cookies[config.ACCESS_TOKEN_COOKIE_NAME];
+    if (!accessCookie) {
       next();
       return;
     }
-    const splitAuthHeader = authHeader.split("Bearer ");
-    if (splitAuthHeader.length < 2) {
-      throw new Error("Malformed authorization header.");
-    }
-    const token = splitAuthHeader[1];
-    let payload;
+    let jwsToken: BaseToken<{ id: string }>;
     try {
-      payload = verifyJwt<{ id: string }>(token, TokenType.Access);
+      jwsToken = token.verify<{ id: string }>(accessCookie);
     } catch (error) {
-      throw new Error();
+      throw new Error("Invalid token.");
     }
-    const { id, aud } = payload;
+    const { sub, aud } = jwsToken;
     if (aud !== TokenType.Access) {
       throw new Error("Invalid token.");
     }
-    const user = await getRepository(User).findOne(id);
+    const user = await getRepository(User).findOne(sub.id);
     if (!user) {
       throw new Error("User not found.");
     }
     req.authUser = user;
     next();
   });
+
+function parseCookies(req: Request): Record<string, string> {
+  const { cookie: cookieStr } = req.headers;
+  if (!cookieStr) {
+    return {};
+  }
+  const cookies = cookieStr.split("; ");
+  return cookies
+    .map(cookie => cookie.split("="))
+    .map(([key, value]) => ({ [key]: value }))
+    .reduce((acc, cookie) => ({ ...acc, ...cookie }), {});
+}

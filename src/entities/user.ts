@@ -14,14 +14,23 @@ export class User {
   })
   public name: string;
   @Column()
+  public email: string;
+  @Column()
   public passwordHash: string;
 
+  @Field(_ => Plan)
   @OneToMany(_ => Plan, plan => plan.user)
   public plans!: Plan[];
 
-  constructor(id: string, name: string, passwordHash: string) {
+  constructor(id: string, email: string, name: string, passwordHash: string) {
     this.id = id;
+    this.email = email;
     this.name = name;
     this.passwordHash = passwordHash;
+  }
+
+  toJSON() {
+    const { id, name, email, plans } = this;
+    return { id, name, email, plans };
   }
 }

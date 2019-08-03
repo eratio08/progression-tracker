@@ -9,49 +9,48 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const plan_1 = require("./plan");
-let User = class User {
-    constructor(id, email, name, passwordHash) {
+const type_graphql_1 = require("type-graphql");
+var ExerciseType;
+(function (ExerciseType) {
+    ExerciseType["PUSH"] = "push";
+    ExerciseType["PULL"] = "pull";
+    ExerciseType["CARDIO"] = "cardio";
+})(ExerciseType || (ExerciseType = {}));
+type_graphql_1.registerEnumType(ExerciseType, {
+    name: "ExerciseType"
+});
+let Exercise = class Exercise {
+    constructor(id, name, type, plan) {
         this.id = id;
-        this.email = email;
         this.name = name;
-        this.passwordHash = passwordHash;
-    }
-    toJSON() {
-        const { id, name, email, plans } = this;
-        return { id, name, email, plans };
+        this.type = type;
+        this.plan = plan;
     }
 };
 __decorate([
     type_graphql_1.Field(_ => type_graphql_1.ID),
     typeorm_1.PrimaryColumn(),
     __metadata("design:type", String)
-], User.prototype, "id", void 0);
+], Exercise.prototype, "id", void 0);
 __decorate([
     type_graphql_1.Field(),
-    typeorm_1.Column({
-        length: 80
-    }),
-    __metadata("design:type", String)
-], User.prototype, "name", void 0);
-__decorate([
     typeorm_1.Column(),
     __metadata("design:type", String)
-], User.prototype, "email", void 0);
+], Exercise.prototype, "name", void 0);
 __decorate([
+    type_graphql_1.Field(_ => ExerciseType),
     typeorm_1.Column(),
     __metadata("design:type", String)
-], User.prototype, "passwordHash", void 0);
+], Exercise.prototype, "type", void 0);
 __decorate([
-    type_graphql_1.Field(_ => plan_1.Plan),
-    typeorm_1.OneToMany(_ => plan_1.Plan, plan => plan.user),
-    __metadata("design:type", Array)
-], User.prototype, "plans", void 0);
-User = __decorate([
+    typeorm_1.ManyToMany(_ => plan_1.Plan, plan => plan.exercises),
+    __metadata("design:type", plan_1.Plan)
+], Exercise.prototype, "plan", void 0);
+Exercise = __decorate([
     type_graphql_1.ObjectType(),
     typeorm_1.Entity(),
-    __metadata("design:paramtypes", [String, String, String, String])
-], User);
-exports.User = User;
+    __metadata("design:paramtypes", [String, String, String, plan_1.Plan])
+], Exercise);
+exports.Exercise = Exercise;

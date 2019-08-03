@@ -1,5 +1,6 @@
 import { Entity, PrimaryColumn, Column, ManyToMany } from "typeorm";
 import { Plan } from "./plan";
+import { ObjectType, Field, ID, registerEnumType } from "type-graphql";
 
 enum ExerciseType {
   PUSH = "push",
@@ -7,12 +8,20 @@ enum ExerciseType {
   CARDIO = "cardio"
 }
 
+registerEnumType(ExerciseType, {
+  name: "ExerciseType"
+});
+
+@ObjectType()
 @Entity()
 export class Exercise {
+  @Field(_ => ID)
   @PrimaryColumn()
   public id!: string;
+  @Field()
   @Column()
   public name: string;
+  @Field(_ => ExerciseType)
   @Column()
   public type: ExerciseType;
 

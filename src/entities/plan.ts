@@ -10,21 +10,29 @@ import {
 import { Exercise } from "./exercise";
 import { User } from "./user";
 import { Training } from "./training";
+import { ObjectType, Field, ID } from "type-graphql";
 
+@ObjectType()
 @Entity()
 export class Plan {
+  @Field(_ => ID)
   @PrimaryColumn()
   public id: string;
+  @Field()
   @Column()
   public name: string;
+  @Field({ nullable: true })
   @Column()
   public description?: string;
 
+  @Field(_ => User)
   @ManyToOne(_ => User, user => user.plans)
   public user: User;
+  @Field(_ => Exercise)
   @ManyToMany(_ => Exercise, exercise => exercise.plan)
   @JoinTable()
   public exercises!: Exercise[];
+  @Field(_ => Training)
   @OneToMany(_ => Training, training => training.plan)
   public trainings!: Training[];
 

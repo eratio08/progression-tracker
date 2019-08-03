@@ -3,12 +3,68 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+"""
+The javascript `Date` as string. Type represents date and time as the ISO Date string.
+"""
+scalar DateTime
+
+type Exercise {
+  id: ID!
+  name: String!
+  type: ExerciseType!
+}
+
+type ExerciseExecution {
+  id: ID!
+  volumen: Float!
+  description: Float
+  oneRepMax: Float!
+}
+
+enum ExerciseType {
+  PUSH
+  PULL
+  CARDIO
+}
+
+type Mutation {
+  login(password: String!, email: String!): User!
+  register(password: String!, email: String!, name: String!): User!
+}
+
+type Plan {
+  id: ID!
+  name: String!
+  description: String
+  user: User!
+  exercises: [Exercise!]!
+  trainings: [Training!]!
+}
+
 type Query {
   user(id: String!): User!
   users: [User!]!
 }
 
+type Set {
+  id: ID!
+  nr: Float!
+  weight: Float!
+  reps: Int!
+  targetVolumen: Float!
+  targetWeight: Float!
+  targetReps: Int!
+  exerciseExecution: ExerciseExecution!
+}
+
+type Training {
+  id: ID!
+  date: DateTime!
+  nr: Float!
+}
+
 type User {
   id: ID!
   name: String!
+  plans: [Plan!]!
 }
