@@ -29,7 +29,9 @@ enum ExerciseType {
 
 type Mutation {
   login(password: String!, email: String!): User!
-  register(password: String!, email: String!, name: String!): User!
+  createUser(password: String!, email: String!, name: String!): User!
+  updateUser(user: UserUpdates!): User!
+  deleteUser(id: String!): String!
 }
 
 type Plan {
@@ -42,6 +44,8 @@ type Plan {
 }
 
 type Query {
+  plan(id: String!): Plan!
+  plans(after: String = "0", first: Float = 10): [Plan!]!
   user(id: String!): User!
   users: [User!]!
 }
@@ -66,5 +70,13 @@ type Training {
 type User {
   id: ID!
   name: String!
+  email: String!
   plans: [Plan!]!
+}
+
+input UserUpdates {
+  id: String!
+  email: String
+  name: String
+  password: String
 }

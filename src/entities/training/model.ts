@@ -1,6 +1,5 @@
 import { Entity, PrimaryColumn, Column, ManyToOne, OneToMany } from "typeorm";
-import { Plan } from "./plan";
-import { ExerciseExecution } from "./exercise-execution";
+import { Plan, ExerciseExecution } from "../../entities";
 import { ObjectType, Field, ID } from "type-graphql";
 
 @ObjectType()

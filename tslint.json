@@ -7,5 +7,8 @@
     "class-name": true,
     "file-name-casing": [true, "kebab-case"]
   },
-  "rulesDirectory": []
+  "rulesDirectory": [],
+  "linterOptions": {
+    "exclude": ["node_modules"]
+  }
 }

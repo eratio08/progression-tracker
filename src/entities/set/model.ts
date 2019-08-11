@@ -1,5 +1,5 @@
 import { Entity, PrimaryColumn, Column, ManyToOne } from "typeorm";
-import { ExerciseExecution } from "./exercise-execution";
+import { ExerciseExecution } from "../../entities";
 import { ObjectType, Field, ID, Int } from "type-graphql";
 
 @ObjectType()

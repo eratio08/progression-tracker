@@ -1,6 +1,6 @@
 import { Connection, createConnection } from "typeorm";
-import { User } from "./entities";
 import { hashPassword, random } from "./services";
+import { User } from "./entities";
 
 // uses the typeorm.json
 export const db = async (): Promise<Connection | undefined> => {

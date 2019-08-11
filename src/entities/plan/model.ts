@@ -7,9 +7,7 @@ import {
   OneToMany,
   PrimaryColumn
 } from "typeorm";
-import { Exercise } from "./exercise";
-import { User } from "./user";
-import { Training } from "./training";
+import { User, Training, Exercise } from "../../entities";
 import { ObjectType, Field, ID } from "type-graphql";
 
 @ObjectType()

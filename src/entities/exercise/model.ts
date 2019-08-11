@@ -1,5 +1,5 @@
 import { Entity, PrimaryColumn, Column, ManyToMany } from "typeorm";
-import { Plan } from "./plan";
+import { Plan } from "../../entities";
 import { ObjectType, Field, ID, registerEnumType } from "type-graphql";
 
 enum ExerciseType {

@@ -1,27 +1,20 @@
 {
   "name": "progression-track",
   "version": "0.0.1",
-  "description": "Tracker for double progression training plans.",
-  "main": "index.js",
-  "scripts": {
-    "run": "node dist/index.js",
-    "test": "jest",
-    "dev": "tsnd --respawn --transpileOnly src/index.ts",
-    "lint": "tslint --format stylish",
-    "lint:fix": "tslint --format stylish --fix"
-  },
   "author": "Eike Lurz",
   "license": "ISC",
-  "devDependencies": {
-    "@types/bcrypt": "^3.0.0",
-    "@types/moment": "^2.13.0",
-    "jest": "^24.8.0",
-    "prettier": "^1.18.2",
-    "ts-node-dev": "^1.0.0-pre.40",
-    "tslint": "^5.18.0",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-plugin-prettier": "^2.0.1",
-    "typescript": "^3.5.3"
+  "description": "Tracker for double progression training plans.",
+  "scripts": {
+    "start": "node dist/index.js",
+    "test": "jest",
+    "dev": "tsnd -P tsconfig.json --respawn --transpileOnly src/index.ts",
+    "build": "tsc",
+    "lint": "tslint --format stylish",
+    "lint:fix": "tslint --format stylish --fix",
+    "typeorm": "ts-node -P tsconfig.json -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "db:migrate": "npm run typeorm migration:run",
+    "db:migrate:revert": "npm run typeorm migration:revert",
+    "db:migrate:generate": "npm run typeorm migration generate -n"
   },
   "dependencies": {
     "@panva/jose": "^1.6.1",
@@ -31,9 +24,22 @@
     "envalid": "^5.0.0",
     "graphql-yoga": "^1.18.1",
     "moment": "^2.24.0",
-    "pg": "^7.12.0",
+    "pg": "^7.12.1",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^0.17.4",
     "typeorm": "^0.2.18"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^3.0.0",
+    "@types/moment": "^2.13.0",
+    "@types/ws": "^6.0.2",
+    "jest": "^24.8.0",
+    "prettier": "^1.18.2",
+    "ts-node-dev": "^1.0.0-pre.40",
+    "tsconfig-paths": "^3.8.0",
+    "tslint": "^5.18.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.0.1",
+    "typescript": "^3.5.3"
   }
 }

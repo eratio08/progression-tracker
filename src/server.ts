@@ -2,11 +2,11 @@ import cors from "cors";
 import { Request, Response } from "express";
 import { GraphQLServer } from "graphql-yoga";
 import path from "path";
-import { AuthChecker, buildSchemaSync } from "type-graphql";
+import { AuthChecker, buildTypeDefsAndResolvers } from "type-graphql";
 import { config } from "./config";
-import { User } from "./entities";
+import { User, UserResolver } from "./entities";
 import { asyncWrap, authenticate } from "./middlewares";
-import { AuthResolver, UserResolver } from "./resolvers";
+import { AuthResolver } from "./resolvers";
 
 const authChecker: AuthChecker<{ request: { authUser?: User } }> = ({
   context
@@ -14,24 +14,29 @@ const authChecker: AuthChecker<{ request: { authUser?: User } }> = ({
   return Boolean(context.request.authUser);
 };
 
-const schema = buildSchemaSync({
-  resolvers: [UserResolver, AuthResolver],
-  emitSchemaFile: path.resolve(__dirname, "schema.gql"),
-  authChecker
-});
-
-export interface MyContext {
+export interface AppContext {
   request: Request;
   response: Response;
 }
 
-export const server = new GraphQLServer({
-  schema,
-  context: ({ request, response }) => ({
-    request,
-    response
-  })
-});
+export async function setupGrapgQlServer() {
+  const { typeDefs, resolvers } = await buildTypeDefsAndResolvers({
+    resolvers: [AuthResolver, UserResolver],
+    emitSchemaFile: path.resolve(__dirname, "schema.gql"),
+    authChecker
+  });
 
-server.express.use(cors({ origin: config.FRONTEND_URL, credentials: true }));
-server.express.use(asyncWrap(authenticate()));
+  const server = new GraphQLServer({
+    resolvers,
+    typeDefs,
+    context: ({ request, response }) => ({
+      request,
+      response
+    })
+  });
+
+  server.express.use(cors({ origin: config.FRONTEND_URL, credentials: true }));
+  server.express.use(asyncWrap(authenticate()));
+
+  return server;
+}

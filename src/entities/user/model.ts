@@ -1,6 +1,6 @@
 import { Field, ID, ObjectType } from "type-graphql";
-import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
-import { Plan } from "./plan";
+import { Column, Entity, PrimaryColumn, OneToMany } from "typeorm";
+import { Plan } from "../plan";
 
 @ObjectType()
 @Entity()
@@ -13,6 +13,7 @@ export class User {
     length: 80
   })
   public name: string;
+  @Field()
   @Column()
   public email: string;
   @Column()
@@ -31,6 +32,11 @@ export class User {
 
   toJSON() {
     const { id, name, email, plans } = this;
-    return { id, name, email, plans };
+    return {
+      id,
+      name,
+      email,
+      plans
+    };
   }
 }

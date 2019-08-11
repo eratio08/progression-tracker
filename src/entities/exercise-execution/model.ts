@@ -1,8 +1,6 @@
 import { Field, ID, ObjectType } from "type-graphql";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
-import { Exercise } from "./exercise";
-import { Set } from "./set";
-import { Training } from "./training";
+import { Exercise, Training, Set } from "../../entities";
 
 @ObjectType()
 @Entity()
