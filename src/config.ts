@@ -1,6 +1,6 @@
-import envalid from "envalid";
+import { str, email, num, makeValidator, cleanEnv } from "envalid";
 
-const { str, email, num } = envalid;
+// const { str, email, num , makeValidator, cleanEnv} = envalid;
 
 interface Config {
   JWT_SECRET: string;
@@ -11,16 +11,30 @@ interface Config {
   FRONTEND_URL: string;
   ACCESS_TOKEN_COOKIE_NAME: string;
   SECRET_HEX: string;
+  LOG_LVL: LogLvl;
 }
 
-const strHex64 = envalid.makeValidator<string>(x => {
+const strHex64 = makeValidator<string>(x => {
   if (/^[0-9a-f]{64}$/.test(x)) {
     return x;
   }
   throw new Error("Expected a hex-character string of length 64");
 });
 
-export const config = envalid.cleanEnv<Config>(process.env, {
+const enum LogLvl {
+  DEBUG = "debug",
+  INFO = "info",
+  ERROR = "error"
+}
+
+const logLvl = makeValidator<LogLvl>((x: string) => {
+  if (["debug", "info", "error"].indexOf(x) !== -1) {
+    return x;
+  }
+  throw new Error("Invalid log level.");
+});
+
+export const config = cleanEnv<Config>(process.env, {
   JWT_SECRET: str(),
   JWT_ALGORITHM: str(),
   JWT_ISSUER: email(),
@@ -28,5 +42,6 @@ export const config = envalid.cleanEnv<Config>(process.env, {
   HASH_SALT_ROUNDS: num(),
   FRONTEND_URL: str(),
   ACCESS_TOKEN_COOKIE_NAME: str(),
-  SECRET_HEX: strHex64()
+  SECRET_HEX: strHex64(),
+  LOG_LVL: logLvl()
 });

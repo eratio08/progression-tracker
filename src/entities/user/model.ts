@@ -7,21 +7,21 @@ import { Plan } from "../plan";
 export class User {
   @Field(_ => ID)
   @PrimaryColumn()
-  public id: string;
+  id: string;
   @Field()
   @Column({
     length: 80
   })
-  public name: string;
+  name: string;
   @Field()
   @Column()
-  public email: string;
+  email: string;
   @Column()
-  public passwordHash: string;
+  passwordHash: string;
 
-  @Field(_ => Plan)
+  @Field(_ => Plan, { nullable: true })
   @OneToMany(_ => Plan, plan => plan.user)
-  public plans!: Plan[];
+  plans?: Plan[];
 
   constructor(id: string, email: string, name: string, passwordHash: string) {
     this.id = id;

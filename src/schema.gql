@@ -3,6 +3,12 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+input CreatePlanInput {
+  id: String!
+  name: String!
+  description: String
+}
+
 """
 The javascript `Date` as string. Type represents date and time as the ISO Date string.
 """
@@ -29,6 +35,9 @@ enum ExerciseType {
 
 type Mutation {
   login(password: String!, email: String!): User!
+  createPlan(properties: CreatePlanInput!): Plan!
+  updatePlan(changes: UpdatePlanInput!): Plan!
+  deletePlan(id: String!): String!
   createUser(password: String!, email: String!, name: String!): User!
   updateUser(user: UserUpdates!): User!
   deleteUser(id: String!): String!
@@ -45,7 +54,7 @@ type Plan {
 
 type Query {
   plan(id: String!): Plan!
-  plans(after: String = "0", first: Float = 10): [Plan!]!
+  plans(skip: Float = 0, take: Float = 10): [Plan!]!
   user(id: String!): User!
   users: [User!]!
 }
@@ -67,11 +76,16 @@ type Training {
   nr: Float!
 }
 
+input UpdatePlanInput {
+  id: String!
+  description: String
+}
+
 type User {
   id: ID!
   name: String!
   email: String!
-  plans: [Plan!]!
+  plans: [Plan!]
 }
 
 input UserUpdates {

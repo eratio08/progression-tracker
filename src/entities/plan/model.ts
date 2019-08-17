@@ -15,28 +15,29 @@ import { ObjectType, Field, ID } from "type-graphql";
 export class Plan {
   @Field(_ => ID)
   @PrimaryColumn()
-  public id: string;
+  id: string;
   @Field()
   @Column()
-  public name: string;
+  name: string;
   @Field({ nullable: true })
   @Column()
-  public description?: string;
+  description?: string;
 
   @Field(_ => User)
   @ManyToOne(_ => User, user => user.plans)
-  public user: User;
+  user: User;
   @Field(_ => Exercise)
   @ManyToMany(_ => Exercise, exercise => exercise.plan)
   @JoinTable()
-  public exercises!: Exercise[];
+  exercises!: Exercise[];
   @Field(_ => Training)
   @OneToMany(_ => Training, training => training.plan)
-  public trainings!: Training[];
+  trainings!: Training[];
 
-  constructor(id: string, name: string, user: User) {
+  constructor(id: string, name: string, user: User, description?: string) {
     this.id = id;
     this.name = name;
     this.user = user;
+    this.description = description;
   }
 }

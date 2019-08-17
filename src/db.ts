@@ -1,12 +1,13 @@
 import { Connection, createConnection } from "typeorm";
 import { hashPassword, random } from "./services";
 import { User } from "./entities";
+import { logger } from "./services/logger";
 
 // uses the typeorm.json
 export const db = async (): Promise<Connection | undefined> => {
   try {
     const connection = await createConnection();
-    console.log("DB connected");
+    logger.info("DB connected");
     await seed(connection);
     return connection;
   } catch (error) {
@@ -26,8 +27,8 @@ async function seed(con: Connection) {
     await userRepository.save(
       new User(random.secureId(), adminMail, "Admin", hash)
     );
-    console.log("Admin created.");
+    logger.debug("Admin created.");
   } else {
-    console.log("Admin user exists.");
+    logger.debug("Admin user exists.");
   }
 }

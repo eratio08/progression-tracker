@@ -17,16 +17,16 @@ registerEnumType(ExerciseType, {
 export class Exercise {
   @Field(_ => ID)
   @PrimaryColumn()
-  public id!: string;
+  id!: string;
   @Field()
   @Column()
-  public name: string;
+  name: string;
   @Field(_ => ExerciseType)
   @Column()
-  public type: ExerciseType;
+  type: ExerciseType;
 
   @ManyToMany(_ => Plan, plan => plan.exercises)
-  public plan: Plan;
+  plan: Plan;
 
   constructor(id: string, name: string, type: ExerciseType, plan: Plan) {
     this.id = id;

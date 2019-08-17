@@ -1,17 +1,18 @@
 import "reflect-metadata";
 import { db } from "./db";
 import { setupGrapgQlServer } from "./server";
+import { logger } from "./services/logger";
 
 async function startApp() {
   await db();
   const server = await setupGrapgQlServer();
   await server.start(
     {
-      // playground: true,
-      endpoint: "/graphql"
+      // playground: false,
+      // endpoint: "/graphql"
     },
-    () => console.log("GraphQL server running on http://localhost:4000")
+    () => logger.info("GraphQL server running on http://localhost:4000")
   );
 }
 
-startApp();
+startApp().catch(console.error);

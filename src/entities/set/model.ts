@@ -7,29 +7,29 @@ import { ObjectType, Field, ID, Int } from "type-graphql";
 export class Set {
   @Field(_ => ID)
   @PrimaryColumn()
-  public id: string;
+  id: string;
   @Field()
   @Column({ type: "integer" })
-  public nr: number;
+  nr: number;
   @Field()
   @Column()
-  public weight: number;
+  weight: number;
   @Field(_ => Int)
   @Column({ type: "integer" })
-  public reps: number;
+  reps: number;
   @Field()
   @Column()
-  public targetVolumen: number;
+  targetVolumen: number;
   @Field()
   @Column()
-  public targetWeight: number;
+  targetWeight: number;
   @Field(_ => Int)
   @Column({ type: "integer" })
-  public targetReps: number;
+  targetReps: number;
 
   @Field(_ => ExerciseExecution)
   @ManyToOne(_ => ExerciseExecution)
-  public exerciseExecution: ExerciseExecution;
+  exerciseExecution: ExerciseExecution;
 
   constructor(
     id: string,

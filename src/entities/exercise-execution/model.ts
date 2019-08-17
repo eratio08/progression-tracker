@@ -7,23 +7,23 @@ import { Exercise, Training, Set } from "../../entities";
 export class ExerciseExecution {
   @Field(_ => ID)
   @PrimaryColumn()
-  public id: string;
+  id: string;
   @Field()
   @Column()
-  public volumen: number;
+  volumen: number;
   @Field({ nullable: true })
   @Column()
-  public description?: number;
+  description?: number;
   @Field()
   @Column()
-  public oneRepMax?: number;
+  oneRepMax?: number;
 
   @ManyToOne(_ => Training, training => training.exerciseExecutions)
-  public traning: Training;
+  traning: Training;
   @ManyToOne(_ => Exercise)
-  public exercise: Exercise;
+  exercise: Exercise;
   @OneToMany(_ => Set, set => set.exerciseExecution)
-  public sets!: Set[];
+  sets!: Set[];
 
   constructor(
     id: string,

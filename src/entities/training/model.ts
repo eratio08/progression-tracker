@@ -7,21 +7,21 @@ import { ObjectType, Field, ID } from "type-graphql";
 export class Training {
   @Field(_ => ID)
   @PrimaryColumn()
-  public id: string;
+  id: string;
   @Field()
   @Column()
-  public date: Date;
+  date: Date;
   @Field()
   @Column()
-  public nr: number;
+  nr: number;
 
   @ManyToOne(_ => Plan, plan => plan.trainings)
-  public plan: Plan;
+  plan: Plan;
   @OneToMany(
     _ => ExerciseExecution,
     exerciseExecution => exerciseExecution.traning
   )
-  public exerciseExecutions!: ExerciseExecution[];
+  exerciseExecutions!: ExerciseExecution[];
 
   constructor(id: string, date: Date, nr: number, plan: Plan) {
     this.id = id;

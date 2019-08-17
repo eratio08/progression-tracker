@@ -10,6 +10,7 @@ import {
 import { hashPassword, random } from "../../services";
 import { EntityResolver } from "../entity-resolver";
 import { User } from "./model";
+import { logger } from "../../services/logger";
 
 @InputType()
 class UserUpdates implements Partial<User> {
@@ -36,7 +37,7 @@ export class UserResolver extends EntityResolver<User> {
   @Query(_ => User)
   async user(@Arg("id") id: string): Promise<User> {
     const user = await this.repository.findOneOrFail(id, {
-      // relations: ["plans"]
+      relations: ["plans"]
     });
     return user;
   }
@@ -45,7 +46,7 @@ export class UserResolver extends EntityResolver<User> {
   @Query(_ => [User])
   async users(): Promise<User[]> {
     const users = await this.repository.find({
-      // relations: ["plans"]
+      relations: ["plans"]
     });
     return users;
   }
@@ -66,7 +67,9 @@ export class UserResolver extends EntityResolver<User> {
     }
     const passwordHash = await hashPassword(password);
     const newUser = new User(random.secureId(), email, name, passwordHash);
-    return await this.repository.save(newUser);
+    const created = await this.repository.save(newUser);
+    logger.debug(created);
+    return created;
   }
 
   @Authorized()
@@ -95,9 +98,10 @@ export class UserResolver extends EntityResolver<User> {
   @Mutation(_ => String)
   async deleteUser(@Arg("id") id: string): Promise<string> {
     const result = await this.repository.delete(id);
-    if (result.affected) {
-      return `Deleted user ${id}.`;
+    logger.debug(result);
+    if (!(result.affected! > 0)) {
+      throw new Error("User not found.");
     }
-    throw new Error("Error could not be deleted.");
+    return `Deleted user ${id}.`;
   }
 }
