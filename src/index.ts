@@ -6,12 +6,19 @@ import { logger } from "./services/logger";
 async function startApp() {
   await db();
   const server = await setupGrapgQlServer();
-  await server.start(
-    {
-      // playground: false,
-      // endpoint: "/graphql"
-    },
-    () => logger.info("GraphQL server running on http://localhost:4000")
+  const options = {
+    // playground: false,
+    // endpoint: "/graphql"
+    defaultPlaygroundQuery: `mutation {
+  login(email: "admin@elurz.de", password: "1234") {
+    id
+    name
+  }
+}`
+  };
+
+  await server.start(options, () =>
+    logger.info("GraphQL server running on http://localhost:4000")
   );
 }
 

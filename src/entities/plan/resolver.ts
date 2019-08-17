@@ -8,16 +8,13 @@ import {
   Query,
   Resolver
 } from "type-graphql";
-import { getRepository, Repository } from "typeorm";
 import { AppContext } from "../../server";
 import { random } from "../../services";
+import { EntityResolver } from "../entity-resolver";
 import { Plan } from "./model";
-import { logger } from "../../services/logger";
 
 @InputType()
 class CreatePlanInput {
-  @Field()
-  id!: string;
   @Field()
   name!: string;
   @Field({ nullable: true })
@@ -33,36 +30,33 @@ class UpdatePlanInput implements Partial<Plan> {
 }
 
 @Resolver()
-export class PlanResolver {
-  private planRepository: Repository<Plan>;
-
+export class PlanResolver extends EntityResolver<Plan> {
   constructor() {
-    this.planRepository = getRepository(Plan);
+    super(Plan);
   }
 
   @Authorized()
-  @Query(_ => Plan)
+  @Query(_ => Plan, { description: "Retrieves a plan by the given id." })
   async plan(@Arg("id") id: string): Promise<Plan> {
-    const plan = this.planRepository.findOneOrFail(id);
+    const plan = this.repository.findOneOrFail(id);
     return plan;
   }
 
   @Authorized()
-  @Query(_ => [Plan])
+  @Query(_ => [Plan], { description: "Retrieves a page of plans." })
   async plans(
     @Arg("take", { nullable: true, defaultValue: 10 }) take: number = 10,
     @Arg("skip", { nullable: true, defaultValue: 0 }) skip: number = 0,
     @Ctx() ctx: AppContext
   ): Promise<Plan[]> {
     const { authUser } = ctx.request;
-    const [plans, count] = await this.planRepository.findAndCount({
+    const plans = await this.repository.find({
       take,
       skip,
       order: { id: "ASC" },
       where: [{ userId: authUser!.id }],
-      relations: ["exercises", "tranings"]
+      relations: ["exercises", "trainings"]
     });
-    logger.debug("count", count);
     return plans;
   }
 
@@ -75,27 +69,22 @@ export class PlanResolver {
     const { name, description } = properties;
     const { authUser } = ctx.request;
     const newPlan = new Plan(random.id(), name, authUser!, description);
-    return await this.planRepository.save(newPlan);
+    return await this.repository.save(newPlan);
   }
 
   @Authorized()
   @Mutation(_ => Plan)
-  async updatePlan(@Arg("changes") changes: UpdatePlanInput) {
-    const { id, description } = changes;
-    const plan = await this.planRepository.findOneOrFail(id);
-    if (description) {
-      plan.description = description;
-    }
-    return await this.planRepository.save(plan);
+  async updatePlan(@Arg("plan") changes: UpdatePlanInput) {
+    const { id } = changes;
+    await this.repository.update({ id }, { ...changes });
+    return await this.repository.findOneOrFail(id);
   }
 
   @Authorized()
   @Mutation(_ => String)
-  async deletePlan(@Arg("id") id: string): Promise<String> {
-    const removedEntity = await this.planRepository.delete(id);
-    if (!removedEntity.affected) {
-      throw new Error("Entity not found.");
-    }
+  async deletePlan(@Arg("id") id: string): Promise<"Deleted"> {
+    await this.repository.findOneOrFail(id);
+    await this.repository.delete(id);
     return "Deleted";
   }
 }

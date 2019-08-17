@@ -13,7 +13,7 @@ import { ObjectType, Field, ID } from "type-graphql";
 @ObjectType()
 @Entity()
 export class Plan {
-  @Field(_ => ID)
+  @Field(_ => ID, { description: "Id of the Plan." })
   @PrimaryColumn()
   id: string;
   @Field()
@@ -27,7 +27,7 @@ export class Plan {
   @ManyToOne(_ => User, user => user.plans)
   user: User;
   @Field(_ => Exercise)
-  @ManyToMany(_ => Exercise, exercise => exercise.plan)
+  @ManyToMany(_ => Exercise)
   @JoinTable()
   exercises!: Exercise[];
   @Field(_ => Training)

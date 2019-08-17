@@ -4,7 +4,6 @@
 # -----------------------------------------------
 
 input CreatePlanInput {
-  id: String!
   name: String!
   description: String
 }
@@ -27,6 +26,7 @@ type ExerciseExecution {
   oneRepMax: Float!
 }
 
+"""The type of the exercise."""
 enum ExerciseType {
   PUSH
   PULL
@@ -34,16 +34,19 @@ enum ExerciseType {
 }
 
 type Mutation {
-  login(password: String!, email: String!): User!
   createPlan(properties: CreatePlanInput!): Plan!
-  updatePlan(changes: UpdatePlanInput!): Plan!
+  updatePlan(plan: UpdatePlanInput!): Plan!
   deletePlan(id: String!): String!
   createUser(password: String!, email: String!, name: String!): User!
   updateUser(user: UserUpdates!): User!
   deleteUser(id: String!): String!
+  updateExercise(exercise: UpdateExerciseInput!): Exercise!
+  deleteExercise(id: String!): String!
+  login(password: String!, email: String!): User!
 }
 
 type Plan {
+  """Id of the Plan."""
   id: ID!
   name: String!
   description: String
@@ -53,10 +56,18 @@ type Plan {
 }
 
 type Query {
+  """Retrieves a plan by the given id."""
   plan(id: String!): Plan!
+
+  """Retrieves a page of plans."""
   plans(skip: Float = 0, take: Float = 10): [Plan!]!
   user(id: String!): User!
   users: [User!]!
+  exercise(id: String!): Exercise!
+  exercises(skip: Float = 0, take: Float = 10): [Exercise!]!
+
+  """Creates a new exercise."""
+  createExercise(type: ExerciseType!, name: String!): Exercise!
 }
 
 type Set {
@@ -76,6 +87,12 @@ type Training {
   nr: Float!
 }
 
+input UpdateExerciseInput {
+  id: ID!
+  name: String
+  type: ExerciseType
+}
+
 input UpdatePlanInput {
   id: String!
   description: String
@@ -85,7 +102,14 @@ type User {
   id: ID!
   name: String!
   email: String!
+  role: UserRole!
   plans: [Plan!]
+}
+
+"""Role of a user."""
+enum UserRole {
+  USER
+  ADMIN
 }
 
 input UserUpdates {

@@ -9,7 +9,7 @@ import { logger } from "../services/logger";
 export const authenticate = () =>
   asyncWrap(async (req: Request, _: Response, next: NextFunction) => {
     const cookies = parseCookies(req);
-    logger.debug(cookies);
+    logger.debug("Cookies:", cookies);
     const accessCookie = cookies[config.ACCESS_TOKEN_COOKIE_NAME];
     if (!accessCookie) {
       next();
@@ -35,8 +35,6 @@ export const authenticate = () =>
 
 function parseCookies(req: Request): Record<string, string> {
   const { cookie: cookieStr } = req.headers;
-  logger.debug("Headers", req.headers);
-  logger.debug("cookie str", cookieStr);
   if (!cookieStr) {
     return {};
   }

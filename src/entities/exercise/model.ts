@@ -1,15 +1,15 @@
-import { Entity, PrimaryColumn, Column, ManyToMany } from "typeorm";
-import { Plan } from "../../entities";
-import { ObjectType, Field, ID, registerEnumType } from "type-graphql";
+import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
+import { Column, Entity, PrimaryColumn } from "typeorm";
 
-enum ExerciseType {
+export enum ExerciseType {
   PUSH = "push",
   PULL = "pull",
   CARDIO = "cardio"
 }
 
 registerEnumType(ExerciseType, {
-  name: "ExerciseType"
+  name: "ExerciseType",
+  description: "The type of the exercise."
 });
 
 @ObjectType()
@@ -25,13 +25,9 @@ export class Exercise {
   @Column()
   type: ExerciseType;
 
-  @ManyToMany(_ => Plan, plan => plan.exercises)
-  plan: Plan;
-
-  constructor(id: string, name: string, type: ExerciseType, plan: Plan) {
+  constructor(id: string, name: string, type: ExerciseType) {
     this.id = id;
     this.name = name;
     this.type = type;
-    this.plan = plan;
   }
 }

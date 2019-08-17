@@ -1,7 +1,8 @@
 import { Connection, createConnection } from "typeorm";
 import { hashPassword, random } from "./services";
-import { User } from "./entities";
+import { User, UserRole } from "./entities";
 import { logger } from "./services/logger";
+import { config } from "./config";
 
 // uses the typeorm.json
 export const db = async (): Promise<Connection | undefined> => {
@@ -18,14 +19,19 @@ export const db = async (): Promise<Connection | undefined> => {
 
 async function seed(con: Connection) {
   const userRepository = con.getRepository(User);
-  const adminMail = "admin@elurz.de";
   const admin = await userRepository.findOne(undefined, {
-    where: { email: adminMail }
+    where: { email: config.ADMIN_MAIL }
   });
   if (!admin) {
     const hash = await hashPassword("1234");
     await userRepository.save(
-      new User(random.secureId(), adminMail, "Admin", hash)
+      new User(
+        random.secureId(),
+        config.ADMIN_MAIL,
+        config.ADMIN_PASSWORD,
+        hash,
+        UserRole.ADMIN
+      )
     );
     logger.debug("Admin created.");
   } else {

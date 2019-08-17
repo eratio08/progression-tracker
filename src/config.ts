@@ -12,6 +12,8 @@ interface Config {
   ACCESS_TOKEN_COOKIE_NAME: string;
   SECRET_HEX: string;
   LOG_LVL: LogLvl;
+  ADMIN_MAIL: string;
+  ADMIN_PASSWORD: string;
 }
 
 const strHex64 = makeValidator<string>(x => {
@@ -43,5 +45,7 @@ export const config = cleanEnv<Config>(process.env, {
   FRONTEND_URL: str(),
   ACCESS_TOKEN_COOKIE_NAME: str(),
   SECRET_HEX: strHex64(),
-  LOG_LVL: logLvl()
+  LOG_LVL: logLvl(),
+  ADMIN_MAIL: email(),
+  ADMIN_PASSWORD: str()
 });

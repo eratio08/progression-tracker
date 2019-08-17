@@ -74,34 +74,22 @@ export class UserResolver extends EntityResolver<User> {
 
   @Authorized()
   @Mutation(_ => User)
-  async updateUser(@Arg("user") updates: UserUpdates): Promise<User> {
-    const { id } = updates;
-    if (!id) {
-      throw new Error("Invalid request body.");
+  async updateUser(@Arg("user") changes: UserUpdates): Promise<User> {
+    const { id, password, ...rest } = changes;
+    const updates: Partial<User> = { ...rest };
+    if (password) {
+      const hash = await hashPassword(password);
+      updates.passwordHash = hash;
     }
-    const user = await this.repository.findOneOrFail(id);
-    if (updates.email) {
-      user.email = updates.email;
-    }
-    if (updates.name) {
-      user.name = updates.name;
-    }
-    if (updates.password) {
-      const hash = await hashPassword(updates.password);
-      user.passwordHash = hash;
-    }
-    const updatedUser = await this.repository.save(user);
-    return updatedUser;
+    await this.repository.update({ id }, { ...updates });
+    return this.repository.findOneOrFail(id);
   }
 
   @Authorized()
   @Mutation(_ => String)
-  async deleteUser(@Arg("id") id: string): Promise<string> {
-    const result = await this.repository.delete(id);
-    logger.debug(result);
-    if (!(result.affected! > 0)) {
-      throw new Error("User not found.");
-    }
-    return `Deleted user ${id}.`;
+  async deleteUser(@Arg("id") id: string): Promise<"Deleted"> {
+    await this.repository.findOneOrFail(id);
+    await this.repository.delete(id);
+    return `Deleted`;
   }
 }
