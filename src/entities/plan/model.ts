@@ -25,14 +25,14 @@ export class Plan {
 
   @Field(_ => User)
   @ManyToOne(_ => User, user => user.plans)
-  user: User;
+  user: User | string;
   @Field(_ => Exercise)
   @ManyToMany(_ => Exercise)
-  @JoinTable()
-  exercises!: Exercise[];
+  @JoinTable({ name: "exercise_assignment" })
+  exercises!: Exercise[] | string[];
   @Field(_ => Training)
   @OneToMany(_ => Training, training => training.plan)
-  trainings!: Training[];
+  trainings!: Training[] | string[];
 
   constructor(id: string, name: string, user: User, description?: string) {
     this.id = id;
