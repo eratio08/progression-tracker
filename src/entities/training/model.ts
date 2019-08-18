@@ -15,13 +15,14 @@ export class Training {
   @Column()
   nr: number;
 
+  @Field(_ => Plan)
   @ManyToOne(_ => Plan, plan => plan.trainings)
-  plan: Plan;
+  plan: Plan | string;
   @OneToMany(
     _ => ExerciseExecution,
     exerciseExecution => exerciseExecution.traning
   )
-  exerciseExecutions!: ExerciseExecution[];
+  exerciseExecutions!: ExerciseExecution[] | string[];
 
   constructor(id: string, date: Date, nr: number, plan: Plan) {
     this.id = id;
