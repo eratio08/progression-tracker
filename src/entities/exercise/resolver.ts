@@ -1,17 +1,16 @@
 import {
   Arg,
   Authorized,
-  Query,
-  Resolver,
-  InputType,
   Field,
   ID,
-  Mutation
+  InputType,
+  Mutation,
+  Query,
+  Resolver
 } from "type-graphql";
-import { logger } from "../../services/logger";
+import { random } from "../../services";
 import { EntityResolver } from "../entity-resolver";
 import { Exercise, ExerciseType } from "./model";
-import { random } from "../../services";
 
 @InputType()
 class UpdateExerciseInput implements Partial<Exercise> {
@@ -23,7 +22,7 @@ class UpdateExerciseInput implements Partial<Exercise> {
   public type?: ExerciseType;
 }
 
-@Resolver()
+@Resolver(_ => Exercise)
 export class ExerciseRsolver extends EntityResolver<Exercise> {
   constructor() {
     super(Exercise);
@@ -45,7 +44,6 @@ export class ExerciseRsolver extends EntityResolver<Exercise> {
       take,
       skip
     });
-    logger.debug(exercises);
     return exercises;
   }
 
