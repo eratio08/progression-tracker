@@ -15,6 +15,9 @@ const counter = {
   }
 };
 
+/**
+ * @author Rafael Kallis <rk@rafaelkallis.com>
+ */
 export const random = {
   /**
    * Generates a url-safe, ordered, random string.
