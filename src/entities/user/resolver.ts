@@ -5,12 +5,16 @@ import {
   InputType,
   Mutation,
   Query,
-  Resolver
+  Resolver,
+  FieldResolver,
+  Root
 } from "type-graphql";
 import { hashPassword, random } from "../../services";
+import { logger } from "../../services/logger";
 import { EntityResolver } from "../entity-resolver";
 import { User } from "./model";
-import { logger } from "../../services/logger";
+import { Plan } from "../plan";
+import { getRepository, In } from "typeorm";
 
 @InputType()
 class UserUpdates implements Partial<User> {
@@ -37,7 +41,7 @@ export class UserResolver extends EntityResolver<User> {
   @Query(_ => User)
   async user(@Arg("id") id: string): Promise<User> {
     const user = await this.repository.findOneOrFail(id, {
-      relations: ["plans"]
+      loadRelationIds: true
     });
     return user;
   }
@@ -45,9 +49,7 @@ export class UserResolver extends EntityResolver<User> {
   @Authorized()
   @Query(_ => [User])
   async users(): Promise<User[]> {
-    const users = await this.repository.find({
-      relations: ["plans"]
-    });
+    const users = await this.repository.find({ loadRelationIds: true });
     return users;
   }
 
@@ -60,7 +62,7 @@ export class UserResolver extends EntityResolver<User> {
   ): Promise<User> {
     const user = await this.repository.findOne(undefined, {
       where: { email },
-      relations: ["plans"]
+      loadRelationIds: true
     });
     if (user) {
       throw new Error("User with email already exists.");
@@ -91,5 +93,17 @@ export class UserResolver extends EntityResolver<User> {
     await this.repository.findOneOrFail(id);
     await this.repository.delete(id);
     return `Deleted`;
+  }
+
+  @FieldResolver()
+  async plans(@Root() user: User): Promise<Plan[]> {
+    if (user.plans.length > 0) {
+      const planRepository = getRepository(Plan);
+      const plans = await planRepository.find({
+        where: { id: In(user.plans as string[]) }
+      });
+      return plans;
+    }
+    return [];
   }
 }

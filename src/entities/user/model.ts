@@ -34,7 +34,7 @@ export class User {
 
   @Field(_ => Plan, { nullable: true })
   @OneToMany(_ => Plan, plan => plan.user)
-  plans?: Plan[] | string[];
+  plans!: Plan[] | string[];
 
   constructor(
     id: string,
