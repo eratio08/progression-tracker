@@ -13,7 +13,7 @@ export class ExerciseExecution {
   volumen: number;
   @Field({ nullable: true })
   @Column()
-  description?: number;
+  comment?: number;
   @Field()
   @Column()
   oneRepMax?: number;
