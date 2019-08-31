@@ -1,6 +1,6 @@
-import { Entity, PrimaryColumn, Column, ManyToOne, OneToMany } from "typeorm";
-import { Plan, ExerciseExecution } from "../../entities";
-import { ObjectType, Field, ID } from "type-graphql";
+import { Field, ID, ObjectType } from "type-graphql";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
+import { ExerciseExecution, Plan } from "../../entities";
 
 @ObjectType()
 @Entity()
@@ -10,8 +10,8 @@ export class Training {
   id: string;
 
   @Field()
-  @Column()
-  date: Date;
+  @Column({ default: 0, type: "bigint" })
+  date: number;
 
   @Field()
   @Column()
@@ -27,7 +27,15 @@ export class Training {
   )
   exerciseExecutions!: ExerciseExecution[] | string[];
 
-  constructor(id: string, date: Date, nr: number, plan: Plan) {
+  /**
+   * Creates a new instance.
+   *
+   * @param id - id of the instance
+   * @param date - date as a unix timestamp
+   * @param nr - trainings number
+   * @param plan - related plan
+   */
+  constructor(id: string, date: number, nr: number, plan: Plan) {
     this.id = id;
     this.date = date;
     this.nr = nr;
