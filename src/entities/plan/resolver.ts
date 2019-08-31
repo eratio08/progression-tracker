@@ -72,10 +72,9 @@ export class PlanResolver extends EntityResolver<Plan> {
   @Authorized()
   @Mutation(_ => Plan)
   async createPlan(
-    @Arg("properties") properties: CreatePlanInput,
+    @Arg("properties") { name, description }: CreatePlanInput,
     @Ctx() ctx: AppContext
   ) {
-    const { name, description } = properties;
     const { authUser } = ctx.request;
     const newPlan = new Plan(random.id(), name, authUser!, description);
     return await this.repository.save(newPlan);
@@ -83,8 +82,7 @@ export class PlanResolver extends EntityResolver<Plan> {
 
   @Authorized()
   @Mutation(_ => Plan)
-  async updatePlan(@Arg("plan") changes: UpdatePlanInput) {
-    const { id } = changes;
+  async updatePlan(@Arg("plan") { id, ...changes }: UpdatePlanInput) {
     await this.repository.update({ id }, { ...changes });
     return await this.repository.findOneOrFail(id);
   }
