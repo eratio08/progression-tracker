@@ -6,10 +6,11 @@ import {
   InputType,
   Mutation,
   Query,
-  Resolver
+  Resolver,
+  Args
 } from "type-graphql";
 import { random } from "../../services";
-import { EntityResolver } from "../entity-resolver";
+import { EntityResolver, PagingArgs } from "../entity-resolver";
 import { Exercise, ExerciseType } from "./model";
 
 @InputType()
@@ -36,10 +37,7 @@ export class ExerciseRsolver extends EntityResolver<Exercise> {
 
   @Authorized()
   @Query(_ => [Exercise])
-  async exercises(
-    @Arg("take", { nullable: true, defaultValue: 10 }) take: number = 10,
-    @Arg("skip", { nullable: true, defaultValue: 0 }) skip: number = 0
-  ): Promise<Exercise[]> {
+  async exercises(@Args() { skip, take }: PagingArgs): Promise<Exercise[]> {
     const exercises = await this.repository.find({
       take,
       skip
