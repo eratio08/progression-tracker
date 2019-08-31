@@ -8,7 +8,9 @@ import {
   Resolver,
   InputType,
   Field,
-  ID
+  ID,
+  FieldResolver,
+  Root
 } from "type-graphql";
 import { getRepository } from "typeorm";
 import { AppContext } from "../../server";
@@ -95,5 +97,14 @@ export class TrainingResolver extends EntityResolver<Training> {
     await this.repository.findOneOrFail(id);
     await this.repository.delete(id);
     return "Deleted";
+  }
+
+  @FieldResolver()
+  async plan(@Root() { plan }: Training): Promise<Plan> {
+    if (typeof plan === "string") {
+      const planRepository = getRepository(Plan);
+      return planRepository.findOneOrFail(plan);
+    }
+    return plan;
   }
 }
