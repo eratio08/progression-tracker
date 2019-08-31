@@ -95,18 +95,16 @@ export class PlanResolver extends EntityResolver<Plan> {
     return "Deleted";
   }
 
-  @Authorized()
   @FieldResolver()
-  async user(@Root() plan: Plan): Promise<User> {
+  async user(@Root() { user }: Plan): Promise<User> {
     // TODO: EL - use proper DI
     const userRepository = getRepository(User);
-    if (typeof plan.user === "string") {
-      return await userRepository.findOneOrFail(plan.user);
+    if (typeof user === "string") {
+      return await userRepository.findOneOrFail(user);
     }
-    return await userRepository.findOneOrFail(plan.user.id);
+    return user;
   }
 
-  @Authorized()
   @FieldResolver()
   async exercises(@Root() plan: Plan): Promise<Exercise[]> {
     if (plan.exercises.length > 0) {
@@ -121,7 +119,6 @@ export class PlanResolver extends EntityResolver<Plan> {
     return [];
   }
 
-  @Authorized()
   @FieldResolver()
   async trainings(@Root() plan: Plan): Promise<Training[]> {
     if (plan.trainings.length > 0) {

@@ -101,13 +101,15 @@ export class UserResolver extends EntityResolver<User> {
   }
 
   @FieldResolver()
-  async plans(@Root() user: User): Promise<Plan[]> {
-    if (user.plans.length > 0) {
-      const planRepository = getRepository(Plan);
-      const plans = await planRepository.find({
-        where: { id: In(user.plans as string[]) }
-      });
-      return plans;
+  async plans(@Root() { plans }: User): Promise<Plan[]> {
+    if (plans.length > 0) {
+      if (typeof plans[0] === "string") {
+        const planRepository = getRepository(Plan);
+        return await planRepository.find({
+          where: { id: In(plans as string[]) }
+        });
+      }
+      return plans as Plan[];
     }
     return [];
   }
