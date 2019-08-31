@@ -7,11 +7,12 @@ import {
   Query,
   Resolver,
   FieldResolver,
-  Root
+  Root,
+  Args
 } from "type-graphql";
-import { hashPassword, random } from "../../services";
+import { random, passwd } from "../../services";
 import { logger } from "../../services/logger";
-import { EntityResolver } from "../entity-resolver";
+import { EntityResolver, PagingArgs } from "../entity-resolver";
 import { User } from "./model";
 import { Plan } from "../plan";
 import { getRepository, In } from "typeorm";
@@ -48,8 +49,12 @@ export class UserResolver extends EntityResolver<User> {
 
   @Authorized()
   @Query(_ => [User])
-  async users(): Promise<User[]> {
-    const users = await this.repository.find({ loadRelationIds: true });
+  async users(@Args() { skip, take }: PagingArgs): Promise<User[]> {
+    const users = await this.repository.find({
+      loadRelationIds: true,
+      skip,
+      take
+    });
     return users;
   }
 
@@ -67,7 +72,7 @@ export class UserResolver extends EntityResolver<User> {
     if (user) {
       throw new Error("User with email already exists.");
     }
-    const passwordHash = await hashPassword(password);
+    const passwordHash = await passwd.hash(password);
     const newUser = new User(random.secureId(), email, name, passwordHash);
     const created = await this.repository.save(newUser);
     logger.debug(created);
@@ -80,7 +85,7 @@ export class UserResolver extends EntityResolver<User> {
     const { id, password, ...rest } = changes;
     const updates: Partial<User> = { ...rest };
     if (password) {
-      const hash = await hashPassword(password);
+      const hash = await passwd.hash(password);
       updates.passwordHash = hash;
     }
     await this.repository.update({ id }, { ...updates });
