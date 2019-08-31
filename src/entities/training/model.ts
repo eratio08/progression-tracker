@@ -8,9 +8,11 @@ export class Training {
   @Field(_ => ID)
   @PrimaryColumn()
   id: string;
+
   @Field()
   @Column()
   date: Date;
+
   @Field()
   @Column()
   nr: number;
@@ -18,6 +20,7 @@ export class Training {
   @Field(_ => Plan)
   @ManyToOne(_ => Plan, plan => plan.trainings)
   plan: Plan | string;
+
   @OneToMany(
     _ => ExerciseExecution,
     exerciseExecution => exerciseExecution.traning
