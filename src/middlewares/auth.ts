@@ -2,12 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import { getRepository } from "typeorm";
 import { config } from "../config";
 import { User } from "../entities";
-import { BaseToken, token, TokenType } from "../services";
-import { asyncWrap } from "./async";
+import { BaseToken, cookie, token, TokenType } from "../services";
 import { logger } from "../services/logger";
+import { asyncWrap } from "./async";
 
 export const authenticate = () =>
-  asyncWrap(async (req: Request, _: Response, next: NextFunction) => {
+  asyncWrap(async (req: Request, res: Response, next: NextFunction) => {
     const cookies = parseCookies(req);
     logger.debug("Cookies:", cookies);
     const accessCookie = cookies[config.ACCESS_TOKEN_COOKIE_NAME];
@@ -29,6 +29,7 @@ export const authenticate = () =>
     if (!user) {
       throw new Error("User not found.");
     }
+    cookie.setAccessToken(user, { response: res, request: req });
     req.authUser = user;
     next();
   });

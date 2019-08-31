@@ -1,12 +1,8 @@
-import { CookieOptions } from "express";
 import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
 import { getRepository, Repository } from "typeorm";
-import { config } from "../config";
 import { User } from "../entities";
 import { AppContext } from "../server";
-import { token, TokenType } from "../services";
-import { verifyPassword } from "../services/password";
-import * as moment from "moment";
+import { cookie, passwd } from "../services";
 
 @Resolver()
 export class AuthResolver {
@@ -28,22 +24,10 @@ export class AuthResolver {
     if (!user) {
       throw new Error("User not found.");
     }
-    if (!verifyPassword(password, user.passwordHash)) {
+    if (!passwd.verify(password, user.passwordHash)) {
       throw new Error("Wrong password.");
     }
-    const jwsToken = token.newToken(
-      { email: user.email, id: user.id },
-      TokenType.Access,
-      10
-    );
-    const jws = token.sign(jwsToken);
-    const options: CookieOptions = {
-      expires: moment.unix(jwsToken.exp).toDate(),
-      secure: ctx.request.secure,
-      httpOnly: true,
-      sameSite: "strict" as "strict"
-    };
-    ctx.response.cookie(config.ACCESS_TOKEN_COOKIE_NAME, jws, options);
+    cookie.setAccessToken(user, ctx);
     return user;
   }
 }
