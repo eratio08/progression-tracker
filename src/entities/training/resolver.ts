@@ -87,7 +87,7 @@ export class TrainingResolver extends EntityResolver<Training> {
     ...changes
   }: UpdateTrainingInput): Promise<Training> {
     await this.repository.update(id, changes);
-    return this.repository.findOneOrFail(id);
+    return this.repository.findOneOrFail(id, { loadRelationIds: true });
   }
 
   // delete
@@ -103,7 +103,7 @@ export class TrainingResolver extends EntityResolver<Training> {
   async plan(@Root() { plan }: Training): Promise<Plan> {
     if (typeof plan === "string") {
       const planRepository = getRepository(Plan);
-      return planRepository.findOneOrFail(plan);
+      return planRepository.findOneOrFail(plan, { loadRelationIds: true });
     }
     return plan;
   }
