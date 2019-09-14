@@ -13,8 +13,8 @@ export class ExerciseExecution {
   volumen: number;
   @Field({ nullable: true })
   @Column()
-  comment?: number;
-  @Field()
+  comment?: string;
+  @Field({ nullable: true })
   @Column()
   oneRepMax?: number;
 
@@ -29,11 +29,15 @@ export class ExerciseExecution {
     id: string,
     volumen: number,
     training: Training,
-    exercise: Exercise
+    exercise: Exercise,
+    comment?: string,
+    oneRepMax?: number
   ) {
     this.id = id;
     this.volumen = volumen;
     this.traning = training;
     this.exercise = exercise;
+    this.comment = comment;
+    this.oneRepMax = oneRepMax;
   }
 }

@@ -13,7 +13,7 @@ module.exports = {
   username: TYPEORM_USERNAME,
   password: TYPEORM_PASSWORD,
   synchronize: true,
-  logging: false,
+  logging: true,
   entities: ["src/entities/**/*.ts"],
   migrations: ["src/migrations/**/*.ts"],
   subscribers: ["src/subscribers/**/*.ts"],

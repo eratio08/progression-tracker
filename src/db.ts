@@ -1,5 +1,5 @@
 import { Connection, createConnection } from "typeorm";
-import { hashPassword, random } from "./services";
+import { passwd, random } from "./services";
 import { User, UserRole } from "./entities";
 import { logger } from "./services/logger";
 import { config } from "./config";
@@ -23,7 +23,7 @@ async function seed(con: Connection) {
     where: { email: config.ADMIN_MAIL }
   });
   if (!admin) {
-    const hash = await hashPassword("1234");
+    const hash = await passwd.hash("1234");
     await userRepository.save(
       new User(
         random.secureId(),
