@@ -1,14 +1,12 @@
 import "reflect-metadata";
-import { db } from "./db";
-import { setupGrapgQlServer } from "./server";
+import { setupGraphQlServer } from "./server";
 import { logger } from "./services/logger";
 
 async function startApp() {
-  await db();
-  const server = await setupGrapgQlServer();
+  const server = await setupGraphQlServer();
   const options = {
+    // use same-origin`
     // playground: false,
-    // endpoint: "/graphql"
     defaultPlaygroundQuery: `mutation {
   login(email: "admin@elurz.de", password: "1234") {
     id

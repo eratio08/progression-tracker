@@ -3,19 +3,19 @@ import {
   Args,
   Authorized,
   Ctx,
+  Field,
+  FieldResolver,
+  ID,
+  InputType,
   Mutation,
   Query,
   Resolver,
-  InputType,
-  Field,
-  ID,
-  FieldResolver,
   Root
 } from "type-graphql";
-import { getRepository } from "typeorm";
+import { Repository } from "typeorm";
 import { AppContext } from "../../server";
 import { random } from "../../services";
-import { EntityResolver, PagingArgs } from "../entity-resolver";
+import { PagingArgs } from "../paging-args";
 import { Plan } from "../plan";
 import { Training } from "./model";
 
@@ -30,10 +30,11 @@ class UpdateTrainingInput implements Partial<Training> {
 }
 
 @Resolver(_ => Training)
-export class TrainingResolver extends EntityResolver<Training> {
-  constructor() {
-    super(Training);
-  }
+export class TrainingResolver {
+  constructor(
+    private repository: Repository<Training>,
+    private readonly planRepository: Repository<Plan>
+  ) {}
 
   // get
   @Authorized()
@@ -68,8 +69,7 @@ export class TrainingResolver extends EntityResolver<Training> {
     @Arg("planId") planId: string,
     @Arg("date", { nullable: true }) date?: number
   ): Promise<Training> {
-    const planRepository = getRepository(Plan);
-    const plan = await planRepository.findOneOrFail(planId, {
+    const plan = await this.planRepository.findOneOrFail(planId, {
       loadRelationIds: true
     });
     const num = plan.trainings.length + 1;
@@ -102,8 +102,7 @@ export class TrainingResolver extends EntityResolver<Training> {
   @FieldResolver()
   async plan(@Root() { plan }: Training): Promise<Plan> {
     if (typeof plan === "string") {
-      const planRepository = getRepository(Plan);
-      return planRepository.findOneOrFail(plan, { loadRelationIds: true });
+      return this.planRepository.findOneOrFail(plan, { loadRelationIds: true });
     }
     return plan;
   }

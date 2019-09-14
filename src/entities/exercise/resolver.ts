@@ -1,16 +1,17 @@
 import {
   Arg,
+  Args,
   Authorized,
   Field,
   ID,
   InputType,
   Mutation,
   Query,
-  Resolver,
-  Args
+  Resolver
 } from "type-graphql";
+import { Repository } from "typeorm";
 import { random } from "../../services";
-import { EntityResolver, PagingArgs } from "../entity-resolver";
+import { PagingArgs } from "../paging-args";
 import { Exercise, ExerciseType } from "./model";
 
 @InputType()
@@ -24,10 +25,8 @@ class UpdateExerciseInput implements Partial<Exercise> {
 }
 
 @Resolver(_ => Exercise)
-export class ExerciseRsolver extends EntityResolver<Exercise> {
-  constructor() {
-    super(Exercise);
-  }
+export class ExerciseResolver {
+  constructor(private readonly repository: Repository<Exercise>) {}
 
   @Authorized()
   @Query(_ => Exercise)

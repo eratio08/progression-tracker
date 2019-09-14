@@ -2,10 +2,24 @@ import cors from "cors";
 import { Request, Response } from "express";
 import { GraphQLServer } from "graphql-yoga";
 import path from "path";
-import { AuthChecker, buildTypeDefsAndResolvers } from "type-graphql";
+import { AuthChecker, buildSchema, BuildSchemaOptions } from "type-graphql";
+import { Connection, ObjectType } from "typeorm";
 import { config } from "./config";
-import { User } from "./entities";
+import { db } from "./db";
+import {
+  Exercise,
+  Plan,
+  PlanResolver,
+  Training,
+  User,
+  UserResolver,
+  ExerciseResolver,
+  ExerciseExecution
+} from "./entities";
 import { asyncWrap, authenticate } from "./middlewares";
+import { AuthResolver } from "./resolvers";
+import { TrainingResolver } from "./entities/training/resolver";
+import { ExerciseExecutionResolver } from "./entities/exercise-execution/resolver";
 
 const authChecker: AuthChecker<{ request: { authUser?: User } }> = ({
   context
@@ -18,8 +32,49 @@ export interface AppContext {
   response: Response;
 }
 
-export async function setupGrapgQlServer() {
-  const { typeDefs, resolvers } = await buildTypeDefsAndResolvers({
+const setUpIocContainer = (connection: Connection) => {
+  const userRepository = connection.getRepository(User);
+  const planRepository = connection.getRepository(Plan);
+  const exerciseRepository = connection.getRepository(Exercise);
+  const exerciseExecutionRepository = connection.getRepository(
+    ExerciseExecution
+  );
+  const trainingRepository = connection.getRepository(Training);
+
+  const dic: { [key: string]: object } = {
+    UserResolver: new UserResolver(userRepository),
+    AuthResolver: new AuthResolver(userRepository),
+    PlanResolver: new PlanResolver(
+      planRepository,
+      userRepository,
+      exerciseRepository,
+      trainingRepository
+    ),
+    TrainingResolver: new TrainingResolver(trainingRepository, planRepository),
+    ExerciseResolver: new ExerciseResolver(exerciseRepository),
+    ExerciseExecutionResolver: new ExerciseExecutionResolver(
+      exerciseExecutionRepository,
+      trainingRepository,
+      exerciseRepository
+    )
+  };
+
+  return {
+    get(someClass: ObjectType<unknown>): unknown {
+      const instance = dic[someClass.name];
+      if (!instance) {
+        throw new Error(
+          "Dependency could not be resolved, not instance supplied."
+        );
+      }
+      return instance;
+    }
+  };
+};
+
+export async function setupGraphQlServer() {
+  const connection = await db.connect();
+  const schemaOptions: BuildSchemaOptions = {
     resolvers: [
       `${__dirname}/**/resolvers/*.ts`,
       `${__dirname}/**/resolver.ts`
@@ -27,12 +82,14 @@ export async function setupGrapgQlServer() {
     emitSchemaFile: {
       path: path.resolve(__dirname, "schema.gql")
     },
-    authChecker
-  });
+    authChecker,
+    container: setUpIocContainer(connection)
+  };
+
+  const schema = await buildSchema(schemaOptions);
 
   const server = new GraphQLServer({
-    resolvers,
-    typeDefs,
+    schema,
     context: ({ request, response }) => ({
       request,
       response

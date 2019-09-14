@@ -11,14 +11,14 @@ import {
   Resolver,
   Root
 } from "type-graphql";
-import { getRepository, In } from "typeorm";
 import { AppContext } from "../../server";
 import { random } from "../../services";
-import { EntityResolver, PagingArgs } from "../entity-resolver";
 import { Exercise } from "../exercise";
+import { PagingArgs } from "../paging-args";
 import { Training } from "../training";
 import { User } from "../user";
 import { Plan } from "./model";
+import { In, Repository } from "typeorm";
 
 @InputType()
 class CreatePlanInput {
@@ -39,10 +39,13 @@ class UpdatePlanInput implements Partial<Plan> {
 }
 
 @Resolver(_ => Plan)
-export class PlanResolver extends EntityResolver<Plan> {
-  constructor() {
-    super(Plan);
-  }
+export class PlanResolver {
+  constructor(
+    private readonly repository: Repository<Plan>,
+    private readonly userRepository: Repository<User>,
+    private readonly exerciseRepository: Repository<Exercise>,
+    private readonly trainingRepository: Repository<Training>
+  ) {}
 
   @Authorized()
   @Query(_ => Plan, { description: "Retrieves a plan by the given id." })
@@ -97,10 +100,8 @@ export class PlanResolver extends EntityResolver<Plan> {
 
   @FieldResolver()
   async user(@Root() { user }: Plan): Promise<User> {
-    // TODO: EL - use proper DI
-    const userRepository = getRepository(User);
     if (typeof user === "string") {
-      return await userRepository.findOneOrFail(user);
+      return await this.userRepository.findOneOrFail(user);
     }
     return user;
   }
@@ -108,9 +109,7 @@ export class PlanResolver extends EntityResolver<Plan> {
   @FieldResolver()
   async exercises(@Root() plan: Plan): Promise<Exercise[]> {
     if (plan.exercises.length > 0) {
-      // TODO: EL - solves this DI
-      const exerciseRepository = getRepository(Exercise);
-      const exercises = await exerciseRepository.find({
+      const exercises = await this.exerciseRepository.find({
         where: { id: In(plan.exercises as string[]) },
         loadRelationIds: true
       });
@@ -122,9 +121,7 @@ export class PlanResolver extends EntityResolver<Plan> {
   @FieldResolver()
   async trainings(@Root() plan: Plan): Promise<Training[]> {
     if (plan.trainings.length > 0) {
-      // TODO: EL - solves this DI
-      const trainingRepository = getRepository(Training);
-      const trainings = await trainingRepository.find({
+      const trainings = await this.trainingRepository.find({
         where: { id: In(plan.trainings as string[]) },
         loadRelationIds: true
       });
@@ -143,8 +140,7 @@ export class PlanResolver extends EntityResolver<Plan> {
     const plan = await this.repository.findOneOrFail(planId, {
       relations: ["exercises"]
     });
-    const exerciseRepository = getRepository(Exercise);
-    const exercises = await exerciseRepository.find({
+    const exercises = await this.exerciseRepository.find({
       where: { id: In(exerciseIds) }
     });
     plan.exercises = [...(plan.exercises as Exercise[]), ...exercises];
@@ -164,8 +160,7 @@ export class PlanResolver extends EntityResolver<Plan> {
     const plan = await this.repository.findOneOrFail(planId, {
       relations: ["exercises"]
     });
-    const exerciseRepository = getRepository(Exercise);
-    const exercises = await exerciseRepository.find({
+    const exercises = await this.exerciseRepository.find({
       where: { id: In(exerciseIds) }
     });
     const filteredExercises = (plan.exercises as Exercise[]).filter(

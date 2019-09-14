@@ -1,21 +1,21 @@
 import {
   Arg,
+  Args,
   Authorized,
   Field,
+  FieldResolver,
   InputType,
   Mutation,
   Query,
   Resolver,
-  FieldResolver,
-  Root,
-  Args
+  Root
 } from "type-graphql";
-import { random, passwd } from "../../services";
+import { getRepository, In, Repository } from "typeorm";
+import { passwd, random } from "../../services";
 import { logger } from "../../services/logger";
-import { EntityResolver, PagingArgs } from "../entity-resolver";
-import { User } from "./model";
+import { PagingArgs } from "../paging-args";
 import { Plan } from "../plan";
-import { getRepository, In } from "typeorm";
+import { User } from "./model";
 
 @InputType()
 class UserUpdates implements Partial<User> {
@@ -33,10 +33,8 @@ class UserUpdates implements Partial<User> {
 }
 
 @Resolver(_ => User)
-export class UserResolver extends EntityResolver<User> {
-  constructor() {
-    super(User);
-  }
+export class UserResolver {
+  constructor(protected repository: Repository<User>) {}
 
   @Authorized()
   @Query(_ => User)

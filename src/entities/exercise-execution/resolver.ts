@@ -1,10 +1,9 @@
-import { EntityResolver } from "../entity-resolver";
-import { ExerciseExecution } from "./model";
-import { Authorized, Query, InputType, Field, Arg } from "type-graphql";
-import { getRepository } from "typeorm";
-import { Training } from "../training";
-import { Exercise } from "../exercise/model";
+import { Arg, Authorized, Field, InputType, Query } from "type-graphql";
+import { Repository } from "typeorm";
 import { random } from "../../services";
+import { Exercise } from "../exercise/model";
+import { Training } from "../training";
+import { ExerciseExecution } from "./model";
 
 @InputType()
 class CreateExerciseExecutionInput {
@@ -20,12 +19,12 @@ class CreateExerciseExecutionInput {
   oneRepMax?: number;
 }
 
-export class ExerciseExecutionResolver extends EntityResolver<
-  ExerciseExecution
-> {
-  constructor() {
-    super(ExerciseExecution);
-  }
+export class ExerciseExecutionResolver {
+  constructor(
+    private readonly repository: Repository<ExerciseExecution>,
+    private readonly trainingRepository: Repository<Training>,
+    private readonly exerciseRepository: Repository<Exercise>
+  ) {}
 
   // create
   @Authorized()
@@ -38,12 +37,10 @@ export class ExerciseExecutionResolver extends EntityResolver<
     oneRepMax,
     comment
   }: CreateExerciseExecutionInput): Promise<ExerciseExecution> {
-    const trainingRepository = getRepository(Training);
-    const training = await trainingRepository.findOneOrFail(traningId, {
+    const training = await this.trainingRepository.findOneOrFail(traningId, {
       loadRelationIds: true
     });
-    const exerciseRepository = getRepository(Exercise);
-    const exercise = await exerciseRepository.findOneOrFail(exerciseId, {
+    const exercise = await this.exerciseRepository.findOneOrFail(exerciseId, {
       loadRelationIds: true
     });
     const newExerciseExecution = new ExerciseExecution(

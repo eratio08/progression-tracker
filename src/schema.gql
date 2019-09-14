@@ -37,20 +37,20 @@ enum ExerciseType {
 }
 
 type Mutation {
-  updateExercise(exercise: UpdateExerciseInput!): Exercise!
-  deleteExercise(id: String!): String!
-  createUser(password: String!, email: String!, name: String!): User!
-  updateUser(user: UserUpdates!): User!
-  deleteUser(id: String!): String!
   createPlan(properties: CreatePlanInput!): Plan!
   updatePlan(plan: UpdatePlanInput!): Plan!
   deletePlan(id: String!): String!
   addExercisesToPlan(exerciseIds: [String!]!, planId: String!): Plan!
   removeExercisesFromPlan(exerciseIds: [String!]!, planId: String!): Plan!
+  updateExercise(exercise: UpdateExerciseInput!): Exercise!
+  deleteExercise(id: String!): String!
+  createUser(password: String!, email: String!, name: String!): User!
+  updateUser(user: UserUpdates!): User!
+  deleteUser(id: String!): String!
+  login(password: String!, email: String!): User!
   createTraining(date: Float, planId: String!): Training!
   updateTraining: Training!
   deleteTraining(id: String!): String!
-  login(password: String!, email: String!): User!
 }
 
 type Plan {
@@ -64,6 +64,11 @@ type Plan {
 }
 
 type Query {
+  """Retrieves a plan by the given id."""
+  plan(id: String!): Plan!
+
+  """Retrieves a page of plans."""
+  plans(take: Int = 10, skip: Int = 0): [Plan!]!
   exercise(id: String!): Exercise!
   exercises(take: Int = 10, skip: Int = 0): [Exercise!]!
 
@@ -71,15 +76,9 @@ type Query {
   createExercise(type: ExerciseType!, name: String!): Exercise!
   user(id: String!): User!
   users(take: Int = 10, skip: Int = 0): [User!]!
-
-  """Retrieves a plan by the given id."""
-  plan(id: String!): Plan!
-
-  """Retrieves a page of plans."""
-  plans(take: Int = 10, skip: Int = 0): [Plan!]!
-  createExerciseExecution(properties: CreateExerciseExecutionInput!): ExerciseExecution!
   traning(id: String!): Training!
   trainings(take: Int = 10, skip: Int = 0): [Training!]!
+  createExerciseExecution(properties: CreateExerciseExecutionInput!): ExerciseExecution!
 }
 
 type Set {

@@ -1,16 +1,12 @@
 import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
-import { getRepository, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { User } from "../entities";
 import { AppContext } from "../server";
 import { cookie, passwd } from "../services";
 
 @Resolver()
 export class AuthResolver {
-  private userRepository: Repository<User>;
-
-  constructor() {
-    this.userRepository = getRepository(User);
-  }
+  constructor(private userRepository: Repository<User>) {}
 
   @Mutation(() => User)
   async login(

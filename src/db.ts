@@ -5,15 +5,12 @@ import { logger } from "./services/logger";
 import { config } from "./config";
 
 // uses the typeorm.json
-export const db = async (): Promise<Connection | undefined> => {
-  try {
+export const db = {
+  async connect(): Promise<Connection> {
     const connection = await createConnection();
     logger.info("DB connected");
     await seed(connection);
     return connection;
-  } catch (error) {
-    console.error("DB connection error:", error);
-    return undefined;
   }
 };
 
