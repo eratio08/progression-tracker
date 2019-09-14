@@ -17,32 +17,32 @@
     "db:migrate:generate": "npm run typeorm migration generate -n"
   },
   "dependencies": {
-    "@panva/jose": "^1.6.1",
+    "@panva/jose": "^1.9.1",
     "base64url": "^3.0.1",
     "bcrypt": "^3.0.6",
     "cors": "^2.8.5",
     "envalid": "^5.0.0",
-    "graphql-yoga": "^1.18.1",
+    "graphql-yoga": "^1.18.3",
     "moment": "^2.24.0",
     "pg": "^7.12.1",
-    "pino": "^5.13.2",
+    "pino": "^5.13.3",
     "reflect-metadata": "^0.1.13",
-    "type-graphql": "^0.17.4",
-    "typeorm": "^0.2.18"
+    "type-graphql": "^0.17.5",
+    "typeorm": "^0.2.19"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
     "@types/moment": "^2.13.0",
-    "@types/pino": "^5.8.9",
-    "@types/ws": "^6.0.2",
-    "jest": "^24.8.0",
+    "@types/pino": "^5.8.10",
+    "@types/ws": "^6.0.3",
+    "jest": "^24.9.0",
     "pino-pretty": "^3.2.1",
     "prettier": "^1.18.2",
-    "ts-node-dev": "^1.0.0-pre.40",
-    "tsconfig-paths": "^3.8.0",
-    "tslint": "^5.18.0",
+    "ts-node-dev": "^1.0.0-pre.42",
+    "tsconfig-paths": "^3.9.0",
+    "tslint": "^5.20.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.0.1",
-    "typescript": "^3.5.3"
+    "typescript": "^3.6.3"
   }
 }
