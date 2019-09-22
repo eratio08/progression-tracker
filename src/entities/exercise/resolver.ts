@@ -44,7 +44,6 @@ export class ExerciseResolver {
     return exercises;
   }
 
-  // create
   @Authorized()
   @Query(_ => Exercise, { description: "Creates a new exercise." })
   async createExercise(
@@ -54,7 +53,6 @@ export class ExerciseResolver {
     return await this.repository.save(new Exercise(random.id(), name, type));
   }
 
-  // update
   @Authorized()
   @Mutation(_ => Exercise)
   async updateExercise(
@@ -65,7 +63,6 @@ export class ExerciseResolver {
     return await this.repository.findOneOrFail(changes.id);
   }
 
-  // delete
   @Authorized()
   @Mutation(_ => String)
   async deleteExercise(@Arg("id") id: string): Promise<"Deleted"> {

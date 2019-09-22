@@ -43,7 +43,6 @@ export class TrainingResolver {
     return await this.repository.findOneOrFail(id);
   }
 
-  // getAll
   @Authorized()
   @Query(_ => [Training])
   async trainings(
@@ -62,7 +61,6 @@ export class TrainingResolver {
     return trainings;
   }
 
-  // create
   @Authorized()
   @Mutation(_ => Training)
   async createTraining(
@@ -79,7 +77,6 @@ export class TrainingResolver {
     return training;
   }
 
-  // update
   @Authorized()
   @Mutation(_ => Training)
   async updateTraining({
@@ -90,7 +87,6 @@ export class TrainingResolver {
     return this.repository.findOneOrFail(id, { loadRelationIds: true });
   }
 
-  // delete
   @Authorized()
   @Mutation(_ => String)
   async deleteTraining(@Arg("id") id: string): Promise<"Deleted"> {

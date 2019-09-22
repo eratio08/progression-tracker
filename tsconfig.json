@@ -7,9 +7,9 @@
     "lib": ["es2019", "esnext.asynciterable"],
     "outDir": "./dist",
     "rootDir": "./src",
-    "strict": true,
     "typeRoots": ["src/@types", "node_modules/@types"],
-    "types": ["node"],
+    "types": ["jest", "node"],
+    "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
@@ -19,6 +19,7 @@
     "pretty": true,
     "sourceMap": false
   },
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "**/*.test.ts"],
   "compileOnSave": false
 }

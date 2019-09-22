@@ -17,7 +17,7 @@ registerEnumType(UserRole, {
 export class User {
   @Field(_ => ID)
   @PrimaryColumn()
-  id: string;
+  readonly id: string;
   @Field()
   @Column({
     length: 80
@@ -41,7 +41,7 @@ export class User {
     email: string,
     name: string,
     passwordHash: string,
-    role: UserRole = UserRole.ADMIN
+    role = UserRole.USER
   ) {
     this.id = id;
     this.email = email;

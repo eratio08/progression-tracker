@@ -10,8 +10,8 @@ import {
   Resolver,
   Root
 } from "type-graphql";
-import { getRepository, In, Repository } from "typeorm";
-import { passwd, random } from "../../services";
+import { In, Repository } from "typeorm";
+import * as services from "../../services";
 import { logger } from "../../services/logger";
 import { PagingArgs } from "../paging-args";
 import { Plan } from "../plan";
@@ -34,7 +34,10 @@ class UserUpdates implements Partial<User> {
 
 @Resolver(_ => User)
 export class UserResolver {
-  constructor(protected repository: Repository<User>) {}
+  constructor(
+    private readonly repository: Repository<User>,
+    private readonly planRepository: Repository<Plan>
+  ) {}
 
   @Authorized()
   @Query(_ => User)
@@ -70,8 +73,13 @@ export class UserResolver {
     if (user) {
       throw new Error("User with email already exists.");
     }
-    const passwordHash = await passwd.hash(password);
-    const newUser = new User(random.secureId(), email, name, passwordHash);
+    const passwordHash = await services.password.hash(password);
+    const newUser = new User(
+      services.random.secureId(),
+      email,
+      name,
+      passwordHash
+    );
     const created = await this.repository.save(newUser);
     logger.debug(created);
     return created;
@@ -83,7 +91,7 @@ export class UserResolver {
     const { id, password, ...rest } = changes;
     const updates: Partial<User> = { ...rest };
     if (password) {
-      const hash = await passwd.hash(password);
+      const hash = await services.password.hash(password);
       updates.passwordHash = hash;
     }
     await this.repository.update({ id }, { ...updates });
@@ -102,8 +110,7 @@ export class UserResolver {
   async plans(@Root() { plans }: User): Promise<Plan[]> {
     if (plans.length > 0) {
       if (typeof plans[0] === "string") {
-        const planRepository = getRepository(Plan);
-        return await planRepository.find({
+        return await this.planRepository.find({
           where: { id: In(plans as string[]) }
         });
       }

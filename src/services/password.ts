@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { config } from "../config";
 
-export const passwd = {
+export const password = {
   async hash(password: string): Promise<string> {
     const iterations = config.HASH_SALT_ROUNDS;
     const salt = await bcrypt.genSalt(iterations);

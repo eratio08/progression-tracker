@@ -5,21 +5,20 @@ import path from "path";
 import { AuthChecker, buildSchema, BuildSchemaOptions } from "type-graphql";
 import { Connection, ObjectType } from "typeorm";
 import { config } from "./config";
-import { db } from "./db";
 import {
   Exercise,
+  ExerciseExecution,
+  ExerciseResolver,
   Plan,
   PlanResolver,
   Training,
   User,
-  UserResolver,
-  ExerciseResolver,
-  ExerciseExecution
+  UserResolver
 } from "./entities";
+import { ExerciseExecutionResolver } from "./entities/exercise-execution/resolver";
+import { TrainingResolver } from "./entities/training/resolver";
 import { asyncWrap, authenticate } from "./middlewares";
 import { AuthResolver } from "./resolvers";
-import { TrainingResolver } from "./entities/training/resolver";
-import { ExerciseExecutionResolver } from "./entities/exercise-execution/resolver";
 
 const authChecker: AuthChecker<{ request: { authUser?: User } }> = ({
   context
@@ -42,7 +41,7 @@ const setUpIocContainer = (connection: Connection) => {
   const trainingRepository = connection.getRepository(Training);
 
   const dic: { [key: string]: object } = {
-    UserResolver: new UserResolver(userRepository),
+    UserResolver: new UserResolver(userRepository, planRepository),
     AuthResolver: new AuthResolver(userRepository),
     PlanResolver: new PlanResolver(
       planRepository,
@@ -72,8 +71,7 @@ const setUpIocContainer = (connection: Connection) => {
   };
 };
 
-export async function setupGraphQlServer() {
-  const connection = await db.connect();
+export async function setupGraphQlServer(connection: Connection) {
   const schemaOptions: BuildSchemaOptions = {
     resolvers: [
       `${__dirname}/**/resolvers/*.ts`,

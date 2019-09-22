@@ -15,7 +15,7 @@ import { ObjectType, Field, ID } from "type-graphql";
 export class Plan {
   @Field(_ => ID, { description: "Id of the Plan." })
   @PrimaryColumn()
-  id: string;
+  readonly id: string;
   @Field()
   @Column()
   name: string;

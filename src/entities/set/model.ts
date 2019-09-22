@@ -7,7 +7,7 @@ import { ObjectType, Field, ID, Int } from "type-graphql";
 export class Set {
   @Field(_ => ID)
   @PrimaryColumn()
-  id: string;
+  readonly id: string;
   @Field()
   @Column({ type: "integer" })
   nr: number;

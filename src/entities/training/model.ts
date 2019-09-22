@@ -7,7 +7,7 @@ import { ExerciseExecution, Plan } from "../../entities";
 export class Training {
   @Field(_ => ID)
   @PrimaryColumn()
-  id: string;
+  readonly id: string;
 
   @Field()
   @Column({ default: 0, type: "bigint" })
@@ -23,7 +23,7 @@ export class Training {
 
   @OneToMany(
     _ => ExerciseExecution,
-    exerciseExecution => exerciseExecution.traning
+    exerciseExecution => exerciseExecution.training
   )
   exerciseExecutions!: ExerciseExecution[] | string[];
 

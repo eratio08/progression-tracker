@@ -2,7 +2,7 @@ import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
 import { Repository } from "typeorm";
 import { User } from "../entities";
 import { AppContext } from "../server";
-import { cookie, passwd } from "../services";
+import * as services from "../services";
 
 @Resolver()
 export class AuthResolver {
@@ -11,7 +11,7 @@ export class AuthResolver {
   @Mutation(() => User)
   async login(
     @Arg("email") email: string,
-    @Arg("password") password: string,
+    @Arg("password") pw: string,
     @Ctx() ctx: AppContext
   ): Promise<User> {
     const user = await this.userRepository.findOne(undefined, {
@@ -20,10 +20,10 @@ export class AuthResolver {
     if (!user) {
       throw new Error("User not found.");
     }
-    if (!passwd.verify(password, user.passwordHash)) {
+    if (!services.password.verify(pw, user.passwordHash)) {
       throw new Error("Wrong password.");
     }
-    cookie.setAccessToken(user, ctx);
+    services.cookie.setAccessToken(user, ctx);
     return user;
   }
 }

@@ -130,7 +130,6 @@ export class PlanResolver {
     return [];
   }
 
-  // add exercise
   @Authorized()
   @Mutation(_ => Plan)
   async addExercisesToPlan(
@@ -150,7 +149,6 @@ export class PlanResolver {
     });
   }
 
-  // remove exercise
   @Authorized()
   @Mutation(_ => Plan)
   async removeExercisesFromPlan(

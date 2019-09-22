@@ -1,8 +1,16 @@
-import { str, email, num, makeValidator, cleanEnv } from "envalid";
+import {
+  cleanEnv,
+  email,
+  makeValidator,
+  num,
+  str,
+  ValidatorSpec
+} from "envalid";
 
 // const { str, email, num , makeValidator, cleanEnv} = envalid;
 
 interface Config {
+  NODE_ENV: NodeEnv;
   JWT_SECRET: string;
   JWT_ALGORITHM: string;
   JWT_ISSUER: string;
@@ -14,6 +22,12 @@ interface Config {
   LOG_LVL: LogLvl;
   ADMIN_MAIL: string;
   ADMIN_PASSWORD: string;
+  DB_USERNAME: string;
+  DB_PASSWORD: string;
+  DB_TYPE: string;
+  DB_HOST: string;
+  DB_PORT: number;
+  DB_SCHEMA: string;
 }
 
 const strHex64 = makeValidator<string>(x => {
@@ -36,7 +50,12 @@ const logLvl = makeValidator<LogLvl>((x: string) => {
   throw new Error("Invalid log level.");
 });
 
+type NodeEnv = "production" | "test" | "development";
+
 export const config = cleanEnv<Config>(process.env, {
+  NODE_ENV: str({
+    choices: ["production", "test", "development"]
+  }) as ValidatorSpec<NodeEnv>,
   JWT_SECRET: str(),
   JWT_ALGORITHM: str(),
   JWT_ISSUER: email(),
@@ -47,5 +66,11 @@ export const config = cleanEnv<Config>(process.env, {
   SECRET_HEX: strHex64(),
   LOG_LVL: logLvl(),
   ADMIN_MAIL: email(),
-  ADMIN_PASSWORD: str()
+  ADMIN_PASSWORD: str(),
+  DB_USERNAME: str(),
+  DB_PASSWORD: str(),
+  DB_TYPE: str(),
+  DB_HOST: str(),
+  DB_PORT: num(),
+  DB_SCHEMA: str()
 });

@@ -1,17 +1,35 @@
 import { Connection, createConnection } from "typeorm";
-import { passwd, random } from "./services";
-import { User, UserRole } from "./entities";
-import { logger } from "./services/logger";
 import { config } from "./config";
+import { User, UserRole } from "./entities";
+import { password, random } from "./services";
+import { logger } from "./services/logger";
 
-// uses the typeorm.json
-export const db = {
-  async connect(): Promise<Connection> {
-    const connection = await createConnection();
-    logger.info("DB connected");
-    await seed(connection);
-    return connection;
-  }
+export const db = () => {
+  let connection: Connection;
+  return {
+    async connect(): Promise<Connection> {
+      if (config.NODE_ENV === "test") {
+        // TODO
+        // const client = new Client(config.DB_CONNECTION_STRING);
+        // await client.connect();
+        // const testId = `test_${Date.now()}_${Math.floor(
+        //   Math.random() * Number.MAX_SAFE_INTEGER
+        // )}`;
+        // await client.query(`CREATE USER ${testId} WITH PASSWORD 'pass';`);
+        // await client.query(`CREATE DATABASE ${testId} WITH OWNER = ${testId};`);
+        // await client.end();
+      }
+      const connection = await createConnection();
+      logger.info("DB connected");
+      await seed(connection);
+      return connection;
+    },
+    async disconnect(): Promise<void> {
+      if (connection) {
+        await connection.close();
+      }
+    }
+  };
 };
 
 async function seed(con: Connection) {
@@ -20,13 +38,13 @@ async function seed(con: Connection) {
     where: { email: config.ADMIN_MAIL }
   });
   if (!admin) {
-    const hash = await passwd.hash("1234");
+    const hash = await password.hash(config.ADMIN_PASSWORD);
     await userRepository.save(
       new User(
         random.secureId(),
         config.ADMIN_MAIL,
-        config.ADMIN_PASSWORD,
         hash,
+        "Admin",
         UserRole.ADMIN
       )
     );

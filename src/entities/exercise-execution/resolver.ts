@@ -8,11 +8,11 @@ import { ExerciseExecution } from "./model";
 @InputType()
 class CreateExerciseExecutionInput {
   @Field()
-  traningId!: string;
+  trainingId!: string;
   @Field()
   exerciseId!: string;
   @Field()
-  volumen!: number;
+  volume!: number;
   @Field({ nullable: true })
   comment?: string;
   @Field({ nullable: true })
@@ -31,13 +31,13 @@ export class ExerciseExecutionResolver {
   @Query(_ => ExerciseExecution)
   async createExerciseExecution(@Arg("properties")
   {
-    traningId,
+    trainingId,
     exerciseId,
-    volumen,
+    volume,
     oneRepMax,
     comment
   }: CreateExerciseExecutionInput): Promise<ExerciseExecution> {
-    const training = await this.trainingRepository.findOneOrFail(traningId, {
+    const training = await this.trainingRepository.findOneOrFail(trainingId, {
       loadRelationIds: true
     });
     const exercise = await this.exerciseRepository.findOneOrFail(exerciseId, {
@@ -45,7 +45,7 @@ export class ExerciseExecutionResolver {
     });
     const newExerciseExecution = new ExerciseExecution(
       random.id(),
-      volumen,
+      volume,
       training,
       exercise,
       comment,
@@ -55,6 +55,7 @@ export class ExerciseExecutionResolver {
   }
 
   // read
+  // async readExerciseExecution
 
   // update
 

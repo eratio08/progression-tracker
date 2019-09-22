@@ -17,7 +17,7 @@ registerEnumType(ExerciseType, {
 export class Exercise {
   @Field(_ => ID)
   @PrimaryColumn()
-  id!: string;
+  readonly id!: string;
   @Field()
   @Column()
   name: string;
