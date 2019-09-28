@@ -4,3 +4,4 @@ export * from "./training";
 export * from "./exercise-execution";
 export * from "./set";
 export * from "./user";
+export * from "./auth";

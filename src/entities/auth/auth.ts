@@ -1,8 +1,8 @@
 import { Arg, Ctx, Mutation, Resolver } from "type-graphql";
 import { Repository } from "typeorm";
-import { User } from "../entities";
-import { AppContext } from "../server";
-import * as services from "../services";
+import { User } from "..";
+import { AppContext } from "../../server";
+import * as services from "../../services";
 
 @Resolver()
 export class AuthResolver {

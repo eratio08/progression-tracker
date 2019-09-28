@@ -1,6 +1,7 @@
 import supertest from "supertest";
-import { db } from "./db";
+import { Connection } from "typeorm";
 import { User } from "./entities";
+import { setUpIocContainer } from "./ioc-container";
 import { setupGraphQlServer } from "./server";
 
 export interface TestScenario {
@@ -12,12 +13,14 @@ export interface TestScenario {
 }
 
 export const setupTestScenario = async (): Promise<TestScenario> => {
-  const dbConnection = await db().connect();
-  const app = await setupGraphQlServer(dbConnection);
+  const container = await setUpIocContainer();
+  const app = await setupGraphQlServer(container);
   const server = await app.createHttpServer({ endpoint: "/" });
   const session = supertest.agent(server);
 
-  const entityManager = dbConnection.createEntityManager();
+  const entityManager = container
+    .get<Connection>(Connection.constructor)
+    .createEntityManager();
   const admin = await entityManager.findOne(User, undefined, {
     where: { email: "admin@elurz.de" }
   });
@@ -32,7 +35,6 @@ export const setupTestScenario = async (): Promise<TestScenario> => {
   //   UserRole.ADMIN
   // );
   // await entityManager.save(admin);
-
   return {
     createGqlQuery: (query: string) => ({ query: `query ${query}` }),
     createGqlMutation: (mutation: string) => ({
