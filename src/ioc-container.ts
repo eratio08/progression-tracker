@@ -1,4 +1,4 @@
-import { ObjectType, Repository, Connection } from "typeorm";
+import { ObjectType } from "typeorm";
 import { db } from "./db";
 import {
   AuthResolver,
