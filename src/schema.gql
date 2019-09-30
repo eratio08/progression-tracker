@@ -3,6 +3,23 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+input AddExerciseInput {
+  id: String!
+  targetVolume: Float = 0
+  targetWeight: Float = 0
+  targetReps: Float = 0
+  oneRepMax: Float = 0
+}
+
+input AddPlanInput {
+  name: String!
+  description: String
+}
+
+type BaseEntityWithId {
+  id: ID!
+}
+
 input CreateExerciseExecutionInput {
   trainingId: String!
   exerciseId: String!
@@ -11,15 +28,22 @@ input CreateExerciseExecutionInput {
   oneRepMax: Float
 }
 
-input CreatePlanInput {
-  name: String!
-  description: String
-}
-
 type Exercise {
   id: ID!
   name: String!
   type: ExerciseType!
+}
+
+type ExerciseAssignment {
+  id: ID!
+  planId: String!
+  exerciseId: String!
+  targetVolume: Float!
+  targetWeight: Float!
+  targetReps: Float!
+  oneRepMax: Float
+  plan: Plan!
+  exercise: Exercise!
 }
 
 type ExerciseExecution {
@@ -37,33 +61,34 @@ enum ExerciseType {
 }
 
 type Mutation {
-  createPlan(properties: CreatePlanInput!): Plan!
-  updatePlan(plan: UpdatePlanInput!): Plan!
-  deletePlan(id: String!): String!
-  addExercisesToPlan(exerciseIds: [String!]!, planId: String!): Plan!
-  removeExercisesFromPlan(exerciseIds: [String!]!, planId: String!): Plan!
-  updateExercise(exercise: UpdateExerciseInput!): Exercise!
-  deleteExercise(id: String!): String!
   createTraining(date: Float, planId: String!): Training!
   updateTraining: Training!
   deleteTraining(id: String!): String!
-  createUser(password: String!, email: String!, name: String!): User!
+  addPlan(args: AddPlanInput!): Plan!
+  updatePlan(plan: UpdatePlanInput!): Plan!
+  deletePlan(id: String!): String!
+  addExercisesToPlan(exercises: [AddExerciseInput!]!, planId: String!): Plan!
+  updateExercise(exercise: UpdateExerciseInput!): Exercise!
+  deleteExercise(id: String!): String!
+  addUser(name: String!, email: String!, password: String!): User!
   updateUser(user: UserUpdates!): User!
   deleteUser(id: String!): String!
   login(password: String!, email: String!): User!
 }
 
 type Plan {
-  """Id of the Plan."""
   id: ID!
   name: String!
   description: String
   user: User!
-  exercises: [Exercise!]!
   trainings: [Training!]!
+  exerciseAssignments: [ExerciseAssignment!]!
 }
 
 type Query {
+  traning(id: String!): Training!
+  trainings(take: Int = 10, skip: Int = 0): [Training!]!
+
   """Retrieves a plan by the given id."""
   plan(id: String!): Plan!
 
@@ -74,8 +99,6 @@ type Query {
 
   """Creates a new exercise."""
   createExercise(type: ExerciseType!, name: String!): Exercise!
-  traning(id: String!): Training!
-  trainings(take: Int = 10, skip: Int = 0): [Training!]!
   user(id: String!): User!
   users(take: Int = 10, skip: Int = 0): [User!]!
   createExerciseExecution(properties: CreateExerciseExecutionInput!): ExerciseExecution!

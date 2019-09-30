@@ -1,5 +1,6 @@
 import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { ExerciseAssignment } from "../exercise-assignment/model";
 
 export enum ExerciseType {
   PUSH = "push",
@@ -17,13 +18,21 @@ registerEnumType(ExerciseType, {
 export class Exercise {
   @Field(_ => ID)
   @PrimaryColumn()
-  readonly id!: string;
+  readonly id: string;
+
   @Field()
   @Column()
   name: string;
+
   @Field(_ => ExerciseType)
   @Column()
   type: ExerciseType;
+
+  @OneToMany(
+    _ => ExerciseAssignment,
+    exerciseAssignment => exerciseAssignment.exercise
+  )
+  exerciseAssignments!: ExerciseAssignment[];
 
   constructor(id: string, name: string, type: ExerciseType) {
     this.id = id;

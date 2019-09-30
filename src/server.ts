@@ -29,7 +29,8 @@ export async function setupGraphQlServer(container: IocContainer) {
       path: path.resolve(__dirname, "schema.gql")
     },
     authChecker,
-    container
+    container,
+    validate: true
   };
   const schema = await buildSchema(schemaOptions);
   const server = new GraphQLServer({

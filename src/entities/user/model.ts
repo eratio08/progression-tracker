@@ -1,5 +1,6 @@
-import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
-import { Column, Entity, PrimaryColumn, OneToMany } from "typeorm";
+import { Field, ObjectType, registerEnumType } from "type-graphql";
+import { Column, Entity, OneToMany } from "typeorm";
+import { BaseEntityWithId } from "../base-entity-with-id";
 import { Plan } from "../plan";
 
 export enum UserRole {
@@ -14,20 +15,20 @@ registerEnumType(UserRole, {
 
 @ObjectType()
 @Entity()
-export class User {
-  @Field(_ => ID)
-  @PrimaryColumn()
-  readonly id: string;
+export class User extends BaseEntityWithId {
   @Field()
   @Column({
     length: 80
   })
   name: string;
+
   @Field()
   @Column()
   email: string;
+
   @Column()
   passwordHash: string;
+
   @Field(_ => UserRole)
   @Column({ default: UserRole.USER })
   role: UserRole;
@@ -43,7 +44,7 @@ export class User {
     passwordHash: string,
     role = UserRole.USER
   ) {
-    this.id = id;
+    super(id);
     this.email = email;
     this.name = name;
     this.passwordHash = passwordHash;

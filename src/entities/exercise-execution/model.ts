@@ -8,20 +8,25 @@ export class ExerciseExecution {
   @Field(_ => ID)
   @PrimaryColumn()
   readonly id: string;
+
   @Field()
   @Column()
   volume: number;
+
   @Field({ nullable: true })
   @Column()
   comment?: string;
+
   @Field({ nullable: true })
   @Column()
   oneRepMax?: number;
 
   @ManyToOne(_ => Training, training => training.exerciseExecutions)
   training: Training;
+
   @ManyToOne(_ => Exercise)
   exercise: Exercise;
+
   @OneToMany(_ => Set, set => set.exerciseExecution)
   sets!: Set[];
 

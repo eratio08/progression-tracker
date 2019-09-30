@@ -13,6 +13,7 @@ import {
   UserResolver
 } from "./entities";
 import { ExerciseExecutionResolver } from "./entities/exercise-execution/resolver";
+import { ExerciseAssignment } from "./entities/exercise-assignment/model";
 
 export type IocContainer = { get<T>(someClass: ObjectType<T>): T };
 
@@ -20,6 +21,7 @@ const UserRepository = "UserRepository";
 const PlanRepository = "PlanRepository";
 const ExerciseRepository = "ExerciseRepository";
 const ExerciseExecutionRepository = "ExerciseExecutionRepository";
+const ExerciseAssignmentRepository = "ExerciseAssignmentRepository";
 const TrainingRepository = "TrainingRepository";
 
 export const setUpIocContainer = async (): Promise<IocContainer> => {
@@ -27,16 +29,16 @@ export const setUpIocContainer = async (): Promise<IocContainer> => {
   const connection = await db().connect();
   container.putInstance(connection);
   container.putInstance(connection.getRepository(User), UserRepository);
-
   container.putInstance(connection.getRepository(Plan), PlanRepository);
   container.putInstance(connection.getRepository(Exercise), ExerciseRepository);
   container.putInstance(
     connection.getRepository(ExerciseExecution),
     ExerciseExecutionRepository
   );
+  container.putInstance(connection.getRepository(Training), TrainingRepository);
   container.putInstance(
-    connection.getRepository(Training),
-    "TrainingRepository"
+    connection.getRepository(ExerciseAssignment),
+    ExerciseAssignmentRepository
   );
   container.register(UserResolver, UserRepository, PlanRepository);
   container.register(AuthResolver, UserRepository);
@@ -44,6 +46,7 @@ export const setUpIocContainer = async (): Promise<IocContainer> => {
     PlanResolver,
     PlanRepository,
     UserRepository,
+    ExerciseAssignmentRepository,
     ExerciseRepository,
     TrainingRepository
   );
@@ -102,7 +105,7 @@ class Container {
   private newInstance(classConst: ObjectType<unknown>, deps: unknown[]) {
     if (classConst.length !== deps.length) {
       throw new Error(
-        `${classConst.name} is missing constructor arguments. Expected ${classConst.length} but got ${deps.length}.`
+        `${classConst.name} can not be instantiated. Expected ${classConst.length} but got ${deps.length} arguments.`
       );
     }
     return new (Function.prototype.bind.apply(classConst, [null, ...deps]))();

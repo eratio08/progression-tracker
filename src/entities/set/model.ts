@@ -8,21 +8,27 @@ export class Set {
   @Field(_ => ID)
   @PrimaryColumn()
   readonly id: string;
+
   @Field()
   @Column({ type: "integer" })
   nr: number;
+
   @Field()
   @Column()
   weight: number;
+
   @Field(_ => Int)
   @Column({ type: "integer" })
   reps: number;
+
   @Field()
   @Column()
   targetVolumen: number;
+
   @Field()
   @Column()
   targetWeight: number;
+
   @Field(_ => Int)
   @Column({ type: "integer" })
   targetReps: number;

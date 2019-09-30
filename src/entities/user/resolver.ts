@@ -8,7 +8,8 @@ import {
   Mutation,
   Query,
   Resolver,
-  Root
+  Root,
+  ArgsType
 } from "type-graphql";
 import { In, Repository } from "typeorm";
 import * as services from "../../services";
@@ -16,6 +17,7 @@ import { logger } from "../../services/logger";
 import { PagingArgs } from "../paging-args";
 import { Plan } from "../plan";
 import { User } from "./model";
+import { IsEmail } from "class-validator";
 
 @InputType()
 class UserUpdates implements Partial<User> {
@@ -23,6 +25,7 @@ class UserUpdates implements Partial<User> {
   public id!: string;
 
   @Field({ nullable: true })
+  @IsEmail()
   public email?: string;
 
   @Field({ nullable: true })
@@ -30,6 +33,17 @@ class UserUpdates implements Partial<User> {
 
   @Field({ nullable: true })
   public password?: string;
+}
+
+@ArgsType()
+class AddUserArgs {
+  @Field()
+  name!: string;
+  @Field()
+  @IsEmail()
+  email!: string;
+  @Field()
+  password!: string;
 }
 
 @Resolver(_ => User)
@@ -61,11 +75,7 @@ export class UserResolver {
 
   @Authorized()
   @Mutation(() => User)
-  async createUser(
-    @Arg("name") name: string,
-    @Arg("email") email: string,
-    @Arg("password") password: string
-  ): Promise<User> {
+  async addUser(@Args() { email, name, password }: AddUserArgs): Promise<User> {
     const user = await this.repository.findOne(undefined, {
       where: { email },
       loadRelationIds: true
@@ -108,7 +118,7 @@ export class UserResolver {
 
   @FieldResolver()
   async plans(@Root() { plans }: User): Promise<Plan[]> {
-    if (plans.length > 0) {
+    if (plans && plans.length > 0) {
       if (typeof plans[0] === "string") {
         return await this.planRepository.find({
           where: { id: In(plans as string[]) }
