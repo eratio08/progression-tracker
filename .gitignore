@@ -90,3 +90,6 @@ typings/
 
 # Project specific
 dist/
+
+# vscode
+.vscode/
