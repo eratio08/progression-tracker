@@ -32,6 +32,10 @@ entity Exercise_Assignment {
   --
   * fk(plan_id) : varchar
   * fk(exercise_id) : varchar
+  * target_volume : decimal
+  * target_weight : decimal
+  * target_reps : integer
+    one_rep_max : decimal
 }
 
 entity Exercise {
@@ -56,7 +60,6 @@ entity Exercise_Execution {
   * fk(traning_id) : varchar
   * volume : decimal
   comment : varchar(255)
-  one_rep_max : decimal
 }
 
 entity Set {
@@ -66,9 +69,7 @@ entity Set {
   * nr : integer
   * weight : decimal
   * reps : integer
-  * target_volume : decimal
-  * target_weight : decimal
-  * target_reps : integer
+  
 }
 
 ' Relations
